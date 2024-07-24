@@ -35,3 +35,10 @@ My terraform script can be found in the [terraform directory](./terraform/)
 
 ========> bp 2
 
+I broke down my code into several files for readability and maintainability, it makes the code easier to read and maintain when all scripts that fall into the same group are found in the same place.
+
+The script will create the VPC we will use for the EKS cluster and every other networking resources as well provision the EKS cluster for us.
+
+As you can see, when I run the `terraform plan` command it lets me know the resources and the the number of resources it is about to create.
+
+(image 3)

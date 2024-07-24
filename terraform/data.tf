@@ -6,7 +6,3 @@ data "aws_availability_zones" "azs" {
     values = ["opt-in-not-required"]
   }
 }
-
-locals {
-  
-}

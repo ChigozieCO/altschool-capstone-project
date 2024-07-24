@@ -8,3 +8,8 @@ variable "vpcname" {
   description = "Vpc name"
   type        = string
 }
+
+variable "cluster_name" {
+  description = "Name of EKS cluster"
+  type        = string
+}
