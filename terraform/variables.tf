@@ -13,3 +13,13 @@ variable "cluster_name" {
   description = "Name of EKS cluster"
   type        = string
 }
+
+variable "namespace" {
+  description = "The Kubernetes namespace for the service account"
+  type        = string
+}
+
+variable "service_account_name" {
+  description = "The name of the Kubernetes service account"
+  type        = string
+}

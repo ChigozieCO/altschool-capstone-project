@@ -17,7 +17,8 @@ Your main task is to set up the Socks Shop application, a demonstration of a mic
 - **Deployment Pipeline**: How the application moves from code to a running environment.
 
 - **Monitoring and Alerts**: Implement Prometheus for monitoring and set up Alertmanager for alerts.
-Logging: Ensure the application's operations can be tracked and analyzed through logs.
+
+- **Logging**: Ensure the application's operations can be tracked and analyzed through logs.
 
 - **Tools for Setup**: Use either Ansible or Terraform for managing configurations. Choose an Infrastructure as a Service (IaaS) provider where your Kubernetes cluster will live.
 

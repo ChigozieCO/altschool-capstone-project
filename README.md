@@ -42,3 +42,15 @@ The script will create the VPC we will use for the EKS cluster and every other n
 As you can see, when I run the `terraform plan` command it lets me know the resources and the the number of resources it is about to create.
 
 (image 3)
+
+# Create Policy and Role for Route53 to Assume in the ClusterIssuer Process
+
+While writing the configuration to spin up my VPC and other networking resources as well as my EKS I also added configuration to configure IAM roles and policies for Route 53 with cert-manager.
+
+I created an IAM role with a trust policy that specifies the OIDC provider and conditions for when the role can be assumed based on the service account and namespace.
+
+The ClusterIssuer will need these credentials for the certificate issuing process and as a safe way to handle my secrets I will use IAM roles associated with Kubernetes service accounts to manage access to AWS services securely. This is why it is necessary to create the this policy and role for Route53 and I did it using terraform.
+
+========> bp 3
+
+You can find the script to create the role [here](./terraform/route53-role-policy.tf)
