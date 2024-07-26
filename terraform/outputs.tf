@@ -22,3 +22,9 @@ output "cluster_oidc_issuer_url" {
   description = "The URL on the EKS cluster for the OpenID Connect identity provider"
   value       = module.eks.cluster_oidc_issuer_url
 }
+
+output "aws-account-id" {
+  description = "Account Id of your AWS account"
+  sensitive = true
+  value = data.aws_caller_identity.current.account_id
+}

@@ -11,6 +11,8 @@ For a detailed breakdown of what this project is trying to achieve check out [th
 - Helm
 - A custom domain
 
+Here is a brief breakdown how I executed this project, for a more comprehensive and detailed step by step process check out this [walkthrough](=====link to post=====) I wrote.
+
 # Set Up AWS Hosted Zone and Custom Domain
 
 The first thing to do to begin this project is to create a hosted zone and configure our custom domain.
@@ -54,3 +56,28 @@ The ClusterIssuer will need these credentials for the certificate issuing proces
 ========> bp 3
 
 You can find the script to create the role [here](./terraform/route53-role-policy.tf)
+
+========> bp 4
+
+# Set Environment Variables
+
+I will export some out my terraform output values as environment variables to use with kubectl. This will aid to make the who process more automated reducing the manual configurations.
+
+I wrote a script to do this, find the [script here](./scripts/exp-tf-env-vars.sh)
+
+========> bp 5
+
+# Connect Kubectl to EKS Cluster
+
+Once my EKS Cluster is fully provisioned on AWS, the next thing to do is to connect Kubectl to the cluster so that I can use kubectl right from local machine to define, create, update and delete my Kubernetes resources as necessary.
+
+The command to do this is shown below:
+
+```sh
+aws eks update-kubeconfig --region <region-code> --name <cluster name>
+```
+
+However since this is an imperative command I decided to create a script out of it for easier automation and reproduction of the process. Find the script [here](./scripts/connect-kubectl.sh)
+
+There will be more scripts as I go along the project, all my scripts can be found in the [`scripts` directory](./scripts/)
+
