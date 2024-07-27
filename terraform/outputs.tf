@@ -23,7 +23,7 @@ output "cluster_oidc_issuer_url" {
   value       = module.eks.cluster_oidc_issuer_url
 }
 
-output "aws-account-id" {
+output "aws_account_id" {
   description = "Account Id of your AWS account"
   sensitive = true
   value = data.aws_caller_identity.current.account_id

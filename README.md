@@ -33,17 +33,33 @@ For automation and to speed up the process, we will write a terraform script to 
 
 We won't be reinventing the wheel here as there are a lot of terraform modules out there that do just exactly what we are trying to do. I will be using the official terraform/aws vpc and eks modules.
 
-My terraform script can be found in the [terraform directory](./terraform/)
+My terraform script for the EKS cluster provisioning can be found in the [terraform directory](./terraform/)
 
 ========> bp 2
 
 I broke down my code into several files for readability and maintainability, it makes the code easier to read and maintain when all scripts that fall into the same group are found in the same place.
 
-The script will create the VPC we will use for the EKS cluster and every other networking resources as well provision the EKS cluster for us.
+The scripts will create the VPC we will use for the EKS cluster and every other networking resources as well provision the EKS cluster for us.
 
 As you can see, when I run the `terraform plan` command it lets me know the resources and the the number of resources it is about to create.
 
 (image 3)
+
+I provisioned my EKS cluster at this point to test it but destroyed it for more configurations.
+
+<!-- The screenshots below show a successful deployment of the EKS cluster.
+
+#### **Terraform CLI Showing the Successful Deployment of the Resources**
+
+(image 4)
+
+#### **AWS Console Showing the EKS Cluster**
+
+(image 5)
+
+#### **AWS Console Showing the VPC Deployed Along with the EKS Cluster**
+
+(image 6) -->
 
 # Create Policy and Role for Route53 to Assume in the ClusterIssuer Process
 
@@ -51,25 +67,99 @@ While writing the configuration to spin up my VPC and other networking resources
 
 I created an IAM role with a trust policy that specifies the OIDC provider and conditions for when the role can be assumed based on the service account and namespace.
 
-The ClusterIssuer will need these credentials for the certificate issuing process and as a safe way to handle my secrets I will use IAM roles associated with Kubernetes service accounts to manage access to AWS services securely. This is why it is necessary to create the this policy and role for Route53 and I did it using terraform.
+The ClusterIssuer will need these credentials for the certificate issuing process and as a safe way to handle my secrets I will use IAM roles associated with Kubernetes service accounts to manage access to AWS services securely. This is why it is necessary to create this policy and role for Route53 and I did it using terraform.
+
+You can find the script to create the role [here](./terraform/route53-role-policy.tf)
 
 ========> bp 3
 
-You can find the script to create the role [here](./terraform/route53-role-policy.tf)
+# Configure HTTPS Using Let’s Encrypt
+
+Before I provision my EKS cluster and deploy my application I decided to go ahead and configure HTTPS using Let's Encrypt. I did this using terraform as well, using the Kubernetes provider and the kubectl provider.
+
+You can find the terraform scripts for this deployment in the [terraform directory here](./terraform/)
+
+===============> bp 7
+
+### Create Kubernetes Service Account for the Cert Manager to use
+
+Earlier, while writing my EKS cluster configuration, I added a configuration to create an IAM role for service account (IRSA) so now the first thing I did here was to create the namespace for cert-manager and also create a service account and annotate it with the IAM role.
+
+==============> bp 8
+
+### Configure ClusterIssuer
+
+Next I configured the ClusterIssuer manifest file with the `kubectl_manifest` resource from the kubectl provider so that terraform can adequately use it in the certificate issuing process. I opted to use the DNS01 resolver instead of HTTP01
+
+I had wanted to use the `kubernetes_manifest` resource from the kubernetes provider even though I knew would require two stages of the `terraform apply` command however from research I was able to discover that the kubectl's `kubectl_manifest` resource handles manifest files better and allows for a single stage run of the `terraform apply` command
+
+Find the [ClusterIssuer configuration file here](./terraform/cluster-issuer.tf)
+
+===============> bp 9
+
+### Create Certificate
+
+To create the certificate we will use the `kubectl_manifest` resource to define our manifest file for the certificate creation.
+
+Create a new file `certificate.tf` in the terraform directory and add the below code to it.
+
+#### **terraform/certificate.tf**
+
+```hcl
+resource "kubectl_manifest" "cert_manager_certificate" {
+  manifest = {
+    apiVersion = "cert-manager.io/v1"
+    kind       = "Certificate"
+    metadata = {
+      name      = "projectchigozie-cert"
+      namespace = "cert-manager" # Use the cert-manager namespace
+    }
+    spec = {
+      secretName = "projectchigozie-tls" # The secret where the certificate will be stored
+      issuerRef = {
+        name = kubectl_manifest.cert_manager_cluster_issuer.manifest.metadata.name
+        kind = "ClusterIssuer"
+        namespace = "cert-manager" # Reference the correct namespace
+      }
+      commonName = "projectchigozie.me"
+      dnsNames = [
+        "projectchigozie.me",
+        "*.projectchigozie.me"
+      ]
+      acme = {
+        config = [{
+          dns01 = {
+            provider = "route53"
+          }
+          domains = [
+            "projectchigozie.me",
+            "*.projectchigozie.me"
+          ]
+        }]
+      }
+    }
+  }
+}
+```
+
+--------------------------------------------------------------------------------------------------------------
+After the https, monitoring and alerting and logging add all the below
 
 ========> bp 4
 
 # Set Environment Variables
 
-I will export some out my terraform output values as environment variables to use with kubectl. This will aid to make the who process more automated reducing the manual configurations.
+I will export my terraform output values as environment variables to use with kubectl and other configurations. This will aid to make the whole process more automated reducing the manual configurations.
 
 I wrote a script to do this, find the [script here](./scripts/exp-tf-env-vars.sh)
 
 ========> bp 5
 
+I will always run this script after deploying my EKS Cluster with terraform. The new script generated from this script is not committed to version control as it contains some sensitive values.
+
 # Connect Kubectl to EKS Cluster
 
-Once my EKS Cluster is fully provisioned on AWS, the next thing to do is to connect Kubectl to the cluster so that I can use kubectl right from local machine to define, create, update and delete my Kubernetes resources as necessary.
+Once my EKS Cluster is fully provisioned on AWS, the next thing to do is to connect kubectl to the cluster so that I can use kubectl right from my local machine to define, create, update and delete my Kubernetes resources as necessary.
 
 The command to do this is shown below:
 
@@ -81,3 +171,4 @@ However since this is an imperative command I decided to create a script out of 
 
 There will be more scripts as I go along the project, all my scripts can be found in the [`scripts` directory](./scripts/)
 
+==============> bp 6
