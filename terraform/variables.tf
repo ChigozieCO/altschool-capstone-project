@@ -23,3 +23,8 @@ variable "service_account_name" {
   description = "The name of the Kubernetes service account"
   type        = string
 }
+
+variable "email" {
+  description = "The email address to use in the creation of your SSL certificate"
+  type = string
+}

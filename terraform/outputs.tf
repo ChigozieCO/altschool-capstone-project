@@ -28,3 +28,9 @@ output "aws_account_id" {
   sensitive = true
   value = data.aws_caller_identity.current.account_id
 }
+
+output "cluster_certificate_authority_data" {
+  description = "Base64 encoded certificate data required to communicate with the cluster"
+  sensitive = true
+  value = module.eks.cluster_certificate_authority_data
+}
