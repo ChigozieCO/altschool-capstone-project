@@ -103,6 +103,24 @@ To create the certificate we will use the `kubectl_manifest` resource to define 
 
 ==============> 10
 
+### Configure Ingress Controller and Ingress
+
+Now that we have configured Cert Manager, Cluster Issuer and Certificate we need to setup our Ingress Controller and Ingress resource that will allow us access to our application, we will also be doing this using our terraform configuration.
+
+Find my [ingress configuration here](./terraform/ingress.tf)
+
+For the Ingress Controller, I downloaded the official nginx controller for AWS same as the one used by helm, you can find it [here](https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.11.1/deploy/static/provider/aws/deploy.yaml)
+
+=================> 11
+
+# Deploy Application Using Terraform
+
+I also deployed my application using terraform, I retrieved the [complete-demo.yaml application file](./terraform/complete-demo.yaml) from the project repo which is a combination of all the manifests for all the microservices required for our application to be up and running.
+
+The configuration to deploy my application in my EKS Cluster can be found [here](./terraform/app.tf)
+
+=================> 12
+
 --------------------------------------------------------------------------------------------------------------
 After the https, monitoring and alerting and logging add all the below
 

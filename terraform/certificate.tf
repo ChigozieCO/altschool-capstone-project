@@ -4,24 +4,24 @@ resource "kubectl_manifest" "cert_manager_certificate" {
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: projectchigozie-cert
+  name: ${var.domain}-cert
   namespace: cert-manager 
 spec:
-  secretName: projectchigozie-tls
+  secretName: ${var.domain}-tls
   issuerRef:
     name: letsencrypt-staging
     kind: ClusterIssuer
     group: cert-manager.io
-  commonName: projectchigozie.me
+  commonName: ${var.domain}
   dnsNames:
-    - projectchigozie.me
-    - "*.projectchigozie.me"
+    - ${var.domain}
+    - "*.${var.domain}"
   acme:
     config:
       - dns01:
           provider: route53
         domains:
-          - projectchigozie.me
-          - "*.projectchigozie.me"
+          - ${var.domain}
+          - "*.${var.domain}"
 YAML
 }

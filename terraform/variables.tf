@@ -28,3 +28,8 @@ variable "email" {
   description = "The email address to use in the creation of your SSL certificate"
   type = string
 }
+
+variable "domain" {
+  description = "The domain name to access your application from and use in the creation of your SSL certificate"
+  type = string
+}
