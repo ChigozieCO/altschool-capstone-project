@@ -21,7 +21,6 @@ fi
 # Check if there are terraform outputs and generate env.sh file with export commands
 if terraform output -json | jq -r 'to_entries[] | .key + "=" + (.value.value | tostring)' > "$RUN_FROM/env.sh"; then
   echo "Environment variables export script has been created as env.sh."
-  echo "Run 'source env.sh' to set the environment variables in your current shell session."
 else
   echo "No terraform outputs found. Please run 'terraform apply' first."
   exit 1

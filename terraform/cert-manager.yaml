@@ -9052,6 +9052,7 @@ spec:
       enableServiceLinks: false
       securityContext:
         runAsNonRoot: true
+        fsGroup: 1001
         seccompProfile:
           type: RuntimeDefault
       containers:
@@ -9111,6 +9112,7 @@ spec:
       enableServiceLinks: false
       securityContext:
         runAsNonRoot: true
+        fsGroup: 1001
         seccompProfile:
           type: RuntimeDefault
       containers:
@@ -9189,6 +9191,7 @@ spec:
       enableServiceLinks: false
       securityContext:
         runAsNonRoot: true
+        fsGroup: 1001
         seccompProfile:
           type: RuntimeDefault
       containers:

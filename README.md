@@ -85,6 +85,8 @@ You can find the terraform scripts for this deployment in the [terraform directo
 
 Earlier, while writing my EKS cluster configuration, I added a configuration to create an IAM role for service account (IRSA) so now the first thing I did here was to create the namespace for cert-manager and also create a service account and annotate it with the IAM role.
 
+I ended up creating 3 different service accounts as I ran into some errors while testing as the addition service accounts created using my `cert-manager.yaml` file didn't have the necessary permissions.
+
 ==============> bp 8
 
 ### Configure ClusterIssuer
@@ -112,6 +114,14 @@ Find my [ingress configuration here](./terraform/ingress.tf)
 For the Ingress Controller, I downloaded the official nginx controller for AWS same as the one used by helm, you can find it [here](https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.11.1/deploy/static/provider/aws/deploy.yaml)
 
 =================> 11
+
+### Connect Domain to LoadBalancer
+
+The Ingress-controller will create a LoadBalancer that give us an external IP to us in access our resources and we will point our domain to.
+
+I used this LoadBalancer to create an A record with my domain name and now i will be able to access the sock shop application from my domain.
+
+=================> 12
 
 # Deploy Application Using Terraform
 
