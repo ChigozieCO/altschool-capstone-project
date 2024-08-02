@@ -54,17 +54,20 @@ data "aws_iam_policy_document" "oidc_assume_role" {
     }
     actions = [
       "sts:AssumeRoleWithWebIdentity",
-      "sts:AssumeRole"
     ]
 
     condition {
       test     = "StringEquals"
       variable = "${local.cluster_oidc_issuer}:sub"
       values   = [
-        "system:serviceaccount:${var.namespace}:${var.service_account_name}",
-        "system:serviceaccount:${var.namespace}:cert-manager-webhook",
-        "system:serviceaccount:${var.namespace}:cert-manager-cainjector"
+        "system:serviceaccount:${var.namespace}:${var.service_account_name}"
       ]
+    }
+    
+    condition {
+      test     = "StringEquals"
+      variable = "${local.cluster_oidc_issuer}:aud"
+      values   = ["sts.amazonaws.com"]
     }
   }
 }

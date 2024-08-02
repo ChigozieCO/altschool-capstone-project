@@ -35,11 +35,12 @@ output "cluster_certificate_authority_data" {
   value = module.eks.cluster_certificate_authority_data
 }
 
-output "ingress_load_balancer_dns" {
-  description = "The dns name of the ingress controller's loadbalancer"
-  value = data.kubernetes_service.ingress-nginx-controller.status[0].load_balancer[0].ingress[0].hostname
+output "domain" {
+  description = "The domain name to access your application from"
+  value = var.domain
 }
 
-output "ingress_load_balancer_zone_id" {
-  value = data.aws_lb.ingress_nginx_lb.zone_id
+output "email" {
+  description = "The email address to use in the creation of your SSL certificate"
+  value = var.email
 }

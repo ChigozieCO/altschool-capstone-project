@@ -5,7 +5,7 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: ${var.domain}-cert
-  namespace: cert-manager 
+  namespace: sock-shop  
 spec:
   secretName: ${var.domain}-tls
   issuerRef:
@@ -16,12 +16,6 @@ spec:
   dnsNames:
     - ${var.domain}
     - "*.${var.domain}"
-  acme:
-    config:
-      - dns01:
-          provider: route53
-        domains:
-          - ${var.domain}
-          - "*.${var.domain}"
 YAML
+depends_on = [ helm_release.cert_manager, kubectl_manifest.cert_manager_cluster_issuer ]
 }

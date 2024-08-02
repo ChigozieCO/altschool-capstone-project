@@ -37,3 +37,5 @@ terraform.rc
 
 */env.sh
 env.sh
+*env.sh
+*/*env.sh
