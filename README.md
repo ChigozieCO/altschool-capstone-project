@@ -77,7 +77,7 @@ You can find the script to create the role [here](./terraform/route53-role-polic
 
 Before I provision my EKS cluster and deploy my application I decided to go ahead and configure HTTPS using Let's Encrypt. I did this using terraform as well, using the Kubernetes provider and the kubectl provider.
 
-You can find the terraform scripts for this deployment in the [terraform directory here](./terraform/)
+You can find the terraform scripts for this deployment in the [K8s-terraform directory here](./k8s-terraform/)
 
 ===============> bp 7
 
@@ -85,9 +85,27 @@ You can find the terraform scripts for this deployment in the [terraform directo
 
 Earlier, while writing my EKS cluster configuration, I added a configuration to create an IAM role for service account (IRSA) so now the first thing I did here was to create the namespace for cert-manager and also create a service account and annotate it with the IAM role.
 
-I ended up creating 3 different service accounts as I ran into some errors while testing as the addition service accounts created using my `cert-manager.yaml` file didn't have the necessary permissions.
-
 ==============> bp 8
+
+### Configure Ingress Controller
+
+Before creating the cert-manager resource I configured my ingress controller, it's crucial to ensure that your Ingress controller is deployed and running before you create Ingress resources that it will manage.
+
+You can find the configuration of my ingress controller [here](./k8s-terraform/ingress.tf). I deployed this using helm, using the `helm_release` resource in terraform.
+
+===============> bp 14
+
+### Configure Cert-Manager
+
+After configuring the ingress controller, the next thing to do is to configure the cert-manager, I did this also using helm. Find the configuration [here](./k8s-terraform/cert-manager.tf)
+
+=============> bp 15
+
+### RBAC
+
+In order to allow cert-manager to issue a token using your ServiceAccount you must deploy some RBAC to the cluster. Find my code [here](./k8s-terraform/role-roleBinding.tf)
+
+=============> bp 16
 
 ### Configure ClusterIssuer
 
@@ -105,13 +123,11 @@ To create the certificate we will use the `kubectl_manifest` resource to define 
 
 ==============> 10
 
-### Configure Ingress Controller and Ingress
+### Configure Ingress
 
 Now that we have configured Cert Manager, Cluster Issuer and Certificate we need to setup our Ingress Controller and Ingress resource that will allow us access to our application, we will also be doing this using our terraform configuration.
 
 Find my [ingress configuration here](./terraform/ingress.tf)
-
-For the Ingress Controller, I downloaded the official nginx controller for AWS same as the one used by helm, you can find it [here](https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.11.1/deploy/static/provider/aws/deploy.yaml)
 
 =================> 11
 
@@ -129,7 +145,7 @@ I also deployed my application using terraform, I retrieved the [complete-demo.y
 
 The configuration to deploy my application in my EKS Cluster can be found [here](./terraform/app.tf)
 
-=================> 12
+=================> 13
 
 --------------------------------------------------------------------------------------------------------------
 After the https, monitoring and alerting and logging add all the below

@@ -1,3 +1,10 @@
+# Create a sock-shop namespace that our service account will use
+resource "kubernetes_namespace" "sock-shop" {
+  metadata {
+    name = "sock-shop"
+  }
+}
+
 # Resource to create the certificate
 resource "kubectl_manifest" "cert_manager_certificate" {
   yaml_body = <<YAML
@@ -17,5 +24,5 @@ spec:
     - ${var.domain}
     - "*.${var.domain}"
 YAML
-depends_on = [ helm_release.cert_manager, kubectl_manifest.cert_manager_cluster_issuer ]
+depends_on = [ kubernetes_namespace.sock-shop, kubectl_manifest.cert_manager_cluster_issuer ]
 }

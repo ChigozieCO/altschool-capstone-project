@@ -1,4 +1,4 @@
-# Create the ingress-ngnix namespace
+# Create the ingress-nginx namespace
 resource "kubernetes_namespace" "ingress-nginx" {
   metadata {
     name = "ingress-nginx"
@@ -14,7 +14,7 @@ resource "helm_release" "ingress-nginx" {
   create_namespace = false
   cleanup_on_fail = true
   force_update = true
-  timeout = 3000
+  timeout = 6000
 
   set {
     name  = "controller.service.name"
@@ -41,11 +41,15 @@ resource "helm_release" "ingress-nginx" {
     value = "true"
   }
 
-  depends_on = [ kubernetes_namespace.ingress-nginx  ]
+  set {
+    name  = "controller.extraArgs.default-ssl-certificate"
+    value = "sock-shop/${var.domain}-tls"
+  }
+
+  depends_on = [ kubernetes_namespace.ingress-nginx, kubernetes_namespace.sock-shop  ]
 }
 
 # Create an Ingress resource using the kubectl_manifest resource
-
 resource "kubectl_manifest" "ingress" {
   depends_on = [ kubectl_manifest.cert_manager_cluster_issuer, kubectl_manifest.cert_manager_certificate ]
   yaml_body = <<YAML
@@ -90,6 +94,18 @@ spec:
               number: 80
 YAML
 }
+
+  # - host: "prometheus.${var.domain}"
+  #   http:
+  #     paths:
+  #     - path: /
+  #       pathType: Prefix
+  #       backend:
+  #         service:
+  #           name: prometheus
+  #           port:
+  #             number: 80
+  # - host: "grafana.${var.domain}"
 
 # Route 53 record creation so that our ingress controller can point to our domain name
 resource "aws_route53_record" "ingress_load_balancer" {
