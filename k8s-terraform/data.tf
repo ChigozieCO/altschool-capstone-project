@@ -57,8 +57,10 @@ data "external" "cert_secret" {
     kubectl get secret projectchigozie.me-tls -n sock-shop -o json
   EOT
   ]
+  query = {}
 }
 
 locals {
-  cert_secret = jsondecode(data.external.cert_secret.result)
+  cert_secret_json = data.external.cert_secret.result
+  cert_secret = jsondecode(local.cert_secret_json.result)
 }
