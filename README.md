@@ -45,22 +45,6 @@ As you can see, when I run the `terraform plan` command it lets me know the reso
 
 (image 3)
 
-I provisioned my EKS cluster at this point to test it but destroyed it for more configurations.
-
-<!-- The screenshots below show a successful deployment of the EKS cluster.
-
-#### **Terraform CLI Showing the Successful Deployment of the Resources**
-
-(image 4)
-
-#### **AWS Console Showing the EKS Cluster**
-
-(image 5)
-
-#### **AWS Console Showing the VPC Deployed Along with the EKS Cluster**
-
-(image 6) -->
-
 # Create Policy and Role for Route53 to Assume in the ClusterIssuer Process
 
 While writing the configuration to spin up my VPC and other networking resources as well as my EKS I also added configuration to configure IAM roles and policies for Route 53 with cert-manager.
@@ -72,6 +56,38 @@ The ClusterIssuer will need these credentials for the certificate issuing proces
 You can find the script to create the role [here](./terraform/route53-role-policy.tf)
 
 ========> bp 3
+
+# Create EKS Resources
+
+I provisioned my EKS cluster at this point.
+
+========> bp 4
+
+The screenshots below show a successful deployment of the EKS cluster.
+
+#### **Terraform CLI Showing the Successful Deployment of the Resources**
+
+(image 4)
+
+#### **AWS Console Showing the EKS Cluster**
+
+(image 5)
+
+#### **AWS Console Showing the VPC Deployed Along with the EKS Cluster**
+
+(image 6)
+
+# Set Environment Variables
+
+My setup is in such a way that I will build the EKS cluster first, then using the outputs from that deployment I will set the environment variables for my next terraform build tio create my ingress resources and and SSL certificate.
+
+I will also export my terraform output values as environment variables to use with kubectl and other configurations. This will aid to make the whole process more automated reducing the manual configurations.
+
+I wrote different scripts to do this, find the [scripts here](./scripts), the first script will create the terraform variables that I will use to run my next deployment, find it [here](./scripts/1-setTFvars.sh)
+
+========> bp 5
+
+The new script generated from this script is not committed to version control as it contains some sensitive values.
 
 # Configure HTTPS Using Let’s Encrypt
 
@@ -113,13 +129,13 @@ Next I configured the ClusterIssuer manifest file with the `kubectl_manifest` re
 
 I had wanted to use the `kubernetes_manifest` resource from the kubernetes provider even though I knew would require two stages of the `terraform apply` command however from research I was able to discover that the kubectl's `kubectl_manifest` resource handles manifest files better and allows for a single stage run of the `terraform apply` command
 
-Find the [ClusterIssuer configuration file here](./terraform/cluster-issuer.tf)
+Find the [ClusterIssuer configuration file here](./k8s-terraform/cluster-issuer.tf)
 
 ===============> bp 9
 
 ### Create Certificate
 
-To create the certificate we will use the `kubectl_manifest` resource to define our manifest file for the certificate creation. You can find my certificate manifest file [here](./terraform/certificate.tf)
+To create the certificate we will use the `kubectl_manifest` resource to define our manifest file for the certificate creation. You can find my certificate manifest file [here](./k8s-terraform/certificate.tf)
 
 ==============> 10
 
@@ -127,7 +143,7 @@ To create the certificate we will use the `kubectl_manifest` resource to define 
 
 Now that we have configured Cert Manager, Cluster Issuer and Certificate we need to setup our Ingress Controller and Ingress resource that will allow us access to our application, we will also be doing this using our terraform configuration.
 
-Find my [ingress configuration here](./terraform/ingress.tf)
+Find my [ingress configuration here](./k8s-terraform/ingress.tf)
 
 =================> 11
 
@@ -135,36 +151,13 @@ Find my [ingress configuration here](./terraform/ingress.tf)
 
 The Ingress-controller will create a LoadBalancer that give us an external IP to us in access our resources and we will point our domain to.
 
-I used this LoadBalancer to create an A record with my domain name and now i will be able to access the sock shop application from my domain.
+I used this LoadBalancer to create an A record with my domain name and now I will be able to access the sock shop application from my domain.
 
 =================> 12
 
-# Deploy Application Using Terraform
-
-I also deployed my application using terraform, I retrieved the [complete-demo.yaml application file](./terraform/complete-demo.yaml) from the project repo which is a combination of all the manifests for all the microservices required for our application to be up and running.
-
-The configuration to deploy my application in my EKS Cluster can be found [here](./terraform/app.tf)
-
-=================> 13
-
---------------------------------------------------------------------------------------------------------------
-After the https, monitoring and alerting and logging add all the below
-
-========> bp 4
-
-# Set Environment Variables
-
-I will export my terraform output values as environment variables to use with kubectl and other configurations. This will aid to make the whole process more automated reducing the manual configurations.
-
-I wrote a script to do this, find the [script here](./scripts/exp-tf-env-vars.sh)
-
-========> bp 5
-
-I will always run this script after deploying my EKS Cluster with terraform. The new script generated from this script is not committed to version control as it contains some sensitive values.
-
 # Connect Kubectl to EKS Cluster
 
-Once my EKS Cluster is fully provisioned on AWS, the next thing to do is to connect kubectl to the cluster so that I can use kubectl right from my local machine to define, create, update and delete my Kubernetes resources as necessary.
+Once my EKS Cluster is fully provisioned on AWS and I have deployed my ingress and certificate resources in the cluster, the next thing to do is to connect kubectl to the cluster so that I can use kubectl right from my local machine to define, create, update and delete my Kubernetes resources as necessary.
 
 The command to do this is shown below:
 
@@ -172,8 +165,26 @@ The command to do this is shown below:
 aws eks update-kubeconfig --region <region-code> --name <cluster name>
 ```
 
-However since this is an imperative command I decided to create a script out of it for easier automation and reproduction of the process. Find the script [here](./scripts/connect-kubectl.sh)
+However since this is an imperative command I decided to create a script out of it for easier automation and reproduction of the process. Find the script [here](./scripts/3-connect-kubectl.sh)
 
 There will be more scripts as I go along the project, all my scripts can be found in the [`scripts` directory](./scripts/)
 
 ==============> bp 6
+
+# Deploy Application
+
+Previously I had wanted to deploy my application using terraform but it seems like an overkill seeing as we using a CI/CD pipeline to automate the whole flow eventually resolved to use kubectl to deploy the application to the cluster. 
+
+I retrieved the [complete-demo.yaml application file](./app/complete-demo.yaml) from the project repo which is a combination of all the manifests for all the microservices required for our application to be up and running.
+
+=================> bp 13
+
+# Monitoring and Logging and Alerting
+
+To setup prometheus, grafana, alertmanager and Kibana for monitoring, logging and alerting i retrieved the respective manifest files from the project repo and then created two additional ingresses that will exist in the monitoring namespace and the kube-system namespace so that I can access these dashboards from my subdomain.
+
+The code for these ingresses can be found in my [ingress file](./k8s-terraform/ingress.tf) as well.
+
+After creating the ingress, I then created route53 records for them.
+
+==================> bp 17

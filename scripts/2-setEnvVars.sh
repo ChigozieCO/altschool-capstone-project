@@ -6,13 +6,13 @@
 RUN_FROM=$(pwd)
 
 # Define the directory containing your Terraform configuration files by walking backwards to the project root path so that this script works from whatever directory it is run.
-ABS_PATH=$(readlink -f "$0")
+ABS_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")"
 DIR_PATH=$(dirname "$ABS_PATH")
 PROJECT_PATH=$(dirname "$DIR_PATH")
 TF_PATH="$PROJECT_PATH/terraform"
 
 # Change to the Terraform directory
-cd "$TF_PATH" || { echo "Failed to change directory to $TF_PATH"; exit 1; }
+cd "$TF_PATH" || { echo "Failed to change directory to $TF_PATH"; return 1; }
 
 # Check if jq is installed
 if ! command -v jq &> /dev/null; then
@@ -25,7 +25,7 @@ TF_OUTPUT=$(terraform output -json)
 
 if [ -z "$TF_OUTPUT" ] || [ "$TF_OUTPUT" == "{}" ]; then
   echo "No terraform outputs found or outputs are empty. Please run 'terraform apply' first."
-  exit 1
+  return 1
 fi
 
 # Generate env.sh file with export commands

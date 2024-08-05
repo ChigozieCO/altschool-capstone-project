@@ -95,18 +95,6 @@ spec:
 YAML
 }
 
-  # - host: "prometheus.${var.domain}"
-  #   http:
-  #     paths:
-  #     - path: /
-  #       pathType: Prefix
-  #       backend:
-  #         service:
-  #           name: prometheus
-  #           port:
-  #             number: 80
-  # - host: "grafana.${var.domain}"
-
 # Route 53 record creation so that our ingress controller can point to our domain name
 resource "aws_route53_record" "ingress_load_balancer" {
   zone_id = data.aws_route53_zone.selected.zone_id  # Replace with your Route 53 Hosted Zone ID
@@ -121,9 +109,10 @@ resource "aws_route53_record" "ingress_load_balancer" {
   }
 }
 
+# Route 53 record creation so that our ingress controller can point to subdomains of our domain name
 resource "aws_route53_record" "ingress_www_load_balancer" {
   zone_id = data.aws_route53_zone.selected.zone_id
-  name    = "www.${var.domain}"
+  name    = "*.${var.domain}"
   type    = "A"
   alias {
     name                   = data.aws_elb.ingress_nginx_lb.dns_name
@@ -131,3 +120,109 @@ resource "aws_route53_record" "ingress_www_load_balancer" {
     evaluate_target_health = true
   }
 }
+
+# Create an Ingress resource using the kubectl_manifest resource for our monitoring resources
+resource "kubectl_manifest" "ingress_monitoring" {
+  depends_on = [ kubectl_manifest.cert_manager_cluster_issuer, kubernetes_secret.monitoring_secret ]
+  yaml_body = <<YAML
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress
+  namespace: monitoring
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: "letsencrypt-staging"
+    certmanager.k8s.io/acme-challenge-type: dns01
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  tls:
+  - hosts:
+    - "prometheus.${var.domain}"
+    - "grafana.${var.domain}"
+  secretName: "${var.domain}-tls"
+  rules:
+  - host: "prometheus.${var.domain}"
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: prometheus
+            port:
+              number: 9090
+  - host: "grafana.${var.domain}"
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: grafana
+            port:
+              number: 80
+YAML
+}
+
+# Create an Ingress resource using the kubectl_manifest resource for kibana
+resource "kubectl_manifest" "ingress_kibana" {
+  depends_on = [ kubectl_manifest.cert_manager_cluster_issuer, kubectl_manifest.cert_manager_certificate ]
+  yaml_body = <<YAML
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress
+  namespace: kube-system
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: "letsencrypt-staging"
+    certmanager.k8s.io/acme-challenge-type: dns01
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  tls:
+  - hosts:
+    - "kibana.${var.domain}"
+  secretName: "${var.domain}-tls"
+  rules:
+  - host: "kibana.${var.domain}"
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: kibana
+            port:
+              number: 5601
+YAML
+}
+
+
+# # Route 53 record creation so that our ingress controller can point to prometheus. our domain name
+# resource "aws_route53_record" "ingress_prometheus_record" {
+#   zone_id = data.aws_route53_zone.selected.zone_id
+#   name    = "prometheus.${var.domain}"
+#   type    = "A"
+#   alias {
+#     name                   = data.aws_elb.ingress_nginx_lb.dns_name
+#     zone_id                = data.aws_elb.ingress_nginx_lb.zone_id
+#     evaluate_target_health = true
+#   }
+# }
+
+# # Route 53 record creation so that our ingress controller can point to grafana. our domain name
+# resource "aws_route53_record" "ingress_grafana_record" {
+#   zone_id = data.aws_route53_zone.selected.zone_id
+#   name    = "grafana.${var.domain}"
+#   type    = "A"
+#   alias {
+#     name                   = data.aws_elb.ingress_nginx_lb.dns_name
+#     zone_id                = data.aws_elb.ingress_nginx_lb.zone_id
+#     evaluate_target_health = true
+#   }
+# }

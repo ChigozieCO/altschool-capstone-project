@@ -26,3 +26,27 @@ spec:
 YAML
 depends_on = [ kubernetes_namespace.sock-shop, kubectl_manifest.cert_manager_cluster_issuer ]
 }
+
+# Create a monitoring namespace
+resource "kubernetes_namespace" "monitoring" {
+  metadata {
+    name = "monitoring"
+  }
+}
+
+# Copy the certificate secret from the sock-shop namespace to the monitoring namespace
+resource "kubernetes_secret" "monitoring_secret" {
+  depends_on = [null_resource.fetch_sock_shop_cert, kubernetes_namespace.monitoring]
+
+  metadata {
+    name      = jsondecode(data.external.cert_secret.result)["metadata"]["name"]
+    namespace = "monitoring"
+  }
+
+  data = {
+    tls.crt = jsondecode(data.external.cert_secret.result)["data"]["tls.crt"]
+    tls.key = jsondecode(data.external.cert_secret.result)["data"]["tls.key"]
+  }
+
+  type = "kubernetes.io/tls"
+}
