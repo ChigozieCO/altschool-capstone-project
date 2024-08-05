@@ -39,22 +39,21 @@ data "aws_elb" "ingress_nginx_lb" {
   name = local.lb_name
 }
 
-# # Retrieve the certificate secret 
-# resource "null_resource" "fetch_sock_shop_cert" {
-#   provisioner "local-exec" {
-#     command = <<EOT
-#     aws eks update-kubeconfig --region us-east-1 --name sock-shop-eks
-#     kubectl get secret projectchigozie.me-tls -n sock-shop -o json > cert_secret.json
-#     EOT
-#   }
-#   # Ensure this data source fetches after the service is created
-#   depends_on = [kubectl_manifest.cert_manager_certificate]
-# }
+# Retrieve the certificate secret 
+resource "null_resource" "update_kubeconfig" {
+  provisioner "local-exec" {
+    command = <<EOT
+    aws eks update-kubeconfig --region us-east-1 --name sock-shop-eks
+    EOT
+  }
+  # Ensure this data source fetches after the service is created
+  depends_on = [kubectl_manifest.cert_manager_certificate]
+}
 
 # read the JSON file containing the Secret data
 data "external" "cert_secret" {
+  depends_on = [null_resource.update_kubeconfig]
   program = ["bash", "-c", <<EOT
-    aws eks update-kubeconfig --region us-east-1 --name sock-shop-eks
     kubectl get secret projectchigozie.me-tls -n sock-shop -o json
   EOT
   ]
