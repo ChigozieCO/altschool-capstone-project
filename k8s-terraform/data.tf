@@ -40,7 +40,7 @@ data "aws_elb" "ingress_nginx_lb" {
 }
 
 # Retrieve the certificate secret 
-resource "null_resource" "update_kubeconfig" {
+resource "null_resource" "update_secret" {
   provisioner "local-exec" {
     command = <<EOT
     aws eks update-kubeconfig --region us-east-1 --name sock-shop-eks
