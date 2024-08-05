@@ -44,8 +44,8 @@ resource "kubernetes_secret" "monitoring_secret" {
   }
 
   data = {
-    "tls.crt" = local.cert_secret.data["tls.crt"]
-    "tls.key" = local.cert_secret.data["tls.key"]
+    "tls.crt" = local.cert_secret.tls_crt
+    "tls.key" = local.cert_secret.tls_key
   }
 
   type = "kubernetes.io/tls"

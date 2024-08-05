@@ -54,13 +54,12 @@ resource "null_resource" "update_kubeconfig" {
 data "external" "cert_secret" {
   depends_on = [null_resource.update_kubeconfig]
   program = ["bash", "-c", <<EOT
-    kubectl get secret projectchigozie.me-tls -n sock-shop -o json
+    kubectl get secret projectchigozie.me-tls -n sock-shop -o json | jq -c '{tls_crt: .data["tls.crt"], tls_key: .data["tls.key"]}'
   EOT
   ]
   query = {}
 }
 
 locals {
-  cert_secret_json = data.external.cert_secret.result
-  cert_secret = jsondecode(local.cert_secret_json.result)
+  cert_secret = jsondecode(data.external.cert_secret.result)
 }
