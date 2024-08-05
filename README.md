@@ -181,10 +181,12 @@ I retrieved the [complete-demo.yaml application file](./app/complete-demo.yaml) 
 
 # Monitoring and Logging and Alerting
 
-To setup prometheus, grafana, alertmanager and Kibana for monitoring, logging and alerting i retrieved the respective manifest files from the project repo and then created two additional ingresses that will exist in the monitoring namespace and the kube-system namespace so that I can access these dashboards from my subdomain.
+To setup prometheus, grafana, alertmanager and Kibana for monitoring, logging and alerting I retrieved the respective manifest files from the project repo and then created two additional ingresses that will exist in the monitoring namespace and the kube-system namespace so that I can access these dashboards from my subdomain.
 
 The code for these ingresses can be found in my [ingress file](./k8s-terraform/ingress.tf) as well.
 
-After creating the ingress, I then created route53 records for them.
+I ensured I copied the SSl secret covering the entire domain to the monitoring namespace and the kube-system namespace.
 
 ==================> bp 17
+
+When this was done I applied the manifest files for them.

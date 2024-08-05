@@ -169,7 +169,7 @@ YAML
 
 # Create an Ingress resource using the kubectl_manifest resource for kibana
 resource "kubectl_manifest" "ingress_kibana" {
-  depends_on = [ kubectl_manifest.cert_manager_cluster_issuer, kubectl_manifest.cert_manager_certificate ]
+  depends_on = [ kubectl_manifest.cert_manager_cluster_issuer, null_resource.update_secret_kibana ]
   yaml_body = <<YAML
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -201,28 +201,3 @@ spec:
               number: 5601
 YAML
 }
-
-
-# # Route 53 record creation so that our ingress controller can point to prometheus. our domain name
-# resource "aws_route53_record" "ingress_prometheus_record" {
-#   zone_id = data.aws_route53_zone.selected.zone_id
-#   name    = "prometheus.${var.domain}"
-#   type    = "A"
-#   alias {
-#     name                   = data.aws_elb.ingress_nginx_lb.dns_name
-#     zone_id                = data.aws_elb.ingress_nginx_lb.zone_id
-#     evaluate_target_health = true
-#   }
-# }
-
-# # Route 53 record creation so that our ingress controller can point to grafana. our domain name
-# resource "aws_route53_record" "ingress_grafana_record" {
-#   zone_id = data.aws_route53_zone.selected.zone_id
-#   name    = "grafana.${var.domain}"
-#   type    = "A"
-#   alias {
-#     name                   = data.aws_elb.ingress_nginx_lb.dns_name
-#     zone_id                = data.aws_elb.ingress_nginx_lb.zone_id
-#     evaluate_target_health = true
-#   }
-# }
