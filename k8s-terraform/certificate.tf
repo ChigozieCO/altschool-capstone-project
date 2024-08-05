@@ -34,19 +34,19 @@ resource "kubernetes_namespace" "monitoring" {
   }
 }
 
-# Copy the certificate secret from the sock-shop namespace to the monitoring namespace
-resource "kubernetes_secret" "monitoring_secret" {
-  depends_on = [local.cert_secret, kubernetes_namespace.monitoring]
+# # Copy the certificate secret from the sock-shop namespace to the monitoring namespace
+# resource "kubernetes_secret" "monitoring_secret" {
+#   depends_on = [local.cert_secret, kubernetes_namespace.monitoring]
 
-  metadata {
-    name      = local.cert_secret.metadata.name
-    namespace = "monitoring"
-  }
+#   metadata {
+#     name      = local.cert_secret.metadata.name
+#     namespace = "monitoring"
+#   }
 
-  data = {
-    "tls.crt" = local.cert_secret.tls_crt
-    "tls.key" = local.cert_secret.tls_key
-  }
+#   data = {
+#     "tls.crt" = local.cert_secret.tls_crt
+#     "tls.key" = local.cert_secret.tls_key
+#   }
 
-  type = "kubernetes.io/tls"
-}
+#   type = "kubernetes.io/tls"
+# }

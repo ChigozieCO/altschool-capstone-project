@@ -44,22 +44,23 @@ resource "null_resource" "update_kubeconfig" {
   provisioner "local-exec" {
     command = <<EOT
     aws eks update-kubeconfig --region us-east-1 --name sock-shop-eks
+    kubectl get secret projectchigozie.me-tls -n sock-shop -o yaml | sed 's/namespace: sock-shop/namespace: monitoring/' | kubectl apply -f -
     EOT
   }
   # Ensure this data source fetches after the service is created
   depends_on = [kubectl_manifest.cert_manager_certificate]
 }
 
-# read the JSON file containing the Secret data
-data "external" "cert_secret" {
-  depends_on = [null_resource.update_kubeconfig]
-  program = ["bash", "-c", <<EOT
-    kubectl get secret projectchigozie.me-tls -n sock-shop -o json | jq -c '{tls_crt: .data["tls.crt"], tls_key: .data["tls.key"]}'
-  EOT
-  ]
-  query = {}
-}
+# # read the JSON file containing the Secret data
+# data "external" "cert_secret" {
+#   depends_on = [null_resource.update_kubeconfig]
+#   program = ["bash", "-c", <<EOT
+#     kubectl get secret projectchigozie.me-tls -n sock-shop -o json | jq -c '{tls_crt: .data["tls.crt"], tls_key: .data["tls.key"]}'
+#   EOT
+#   ]
+#   query = {}
+# }
 
-locals {
-  cert_secret = jsondecode(data.external.cert_secret.result)
-}
+# locals {
+#   cert_secret = jsondecode(data.external.cert_secret.result)
+# }
