@@ -163,7 +163,17 @@ spec:
           service:
             name: grafana
             port:
-              number: 80
+              number: 3000
+  - host: alertmanager.projectchigozie.me
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: alertmanager
+                port:
+                  number: 9093
 YAML
 }
 
