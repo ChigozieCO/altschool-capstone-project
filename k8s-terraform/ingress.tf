@@ -142,6 +142,7 @@ spec:
   - hosts:
     - "prometheus.${var.domain}"
     - "grafana.${var.domain}"
+    - "alertmanager.${var.domain}"
   secretName: "${var.domain}-tls"
   rules:
   - host: "prometheus.${var.domain}"
@@ -164,16 +165,16 @@ spec:
             name: grafana
             port:
               number: 3000
-  - host: alertmanager.projectchigozie.me
+  - host: "alertmanager.${var.domain}"
       http:
         paths:
-          - pathType: Prefix
-            path: /
-            backend:
-              service:
-                name: alertmanager
-                port:
-                  number: 9093
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: alertmanager
+              port:
+                number: 9093
 YAML
 }
 
