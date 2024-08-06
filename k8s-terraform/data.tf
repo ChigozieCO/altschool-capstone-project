@@ -40,27 +40,27 @@ data "aws_elb" "ingress_nginx_lb" {
 }
 
 # Retrieve the certificate secret and copy to the monitoring namespace
-resource "null_resource" "update_secret" {
+resource "null_resource" "copy_secret" {
   provisioner "local-exec" {
     command = <<EOT
       aws eks update-kubeconfig --region us-east-1 --name sock-shop-eks && \
       
       # Wait for the secret to be created by cert-manager
-      WAIT_RETRIES=50 && \
-      WAIT_DELAY=45 && \
-      for i in $(seq 1 $WAIT_RETRIES); do \
+      WAIT_RETRIES=80
+      WAIT_DELAY=45
+      for i in $(seq 1 $WAIT_RETRIES); do
         kubectl get secret projectchigozie.me-tls -n sock-shop && break || \
-        echo "Waiting for the secret to be created... ($i/$WAIT_RETRIES)" && \
-        sleep $WAIT_DELAY \
+        echo "Waiting for the secret to be created... ($i/$WAIT_RETRIES)"
+        sleep $WAIT_DELAY
       done && \
       
       # Retry applying the secret in case of concurrent modification
-      RETRIES=5 && \
-      DELAY=5 && \
-      for i in $(seq 1 $RETRIES); do \
+      RETRIES=10
+      DELAY=5
+      for i in $(seq 1 $RETRIES); do
         kubectl get secret projectchigozie.me-tls -n sock-shop -o yaml | sed 's/namespace: sock-shop/namespace: monitoring/' | kubectl apply -f - && break || \
-        echo "Retrying in $DELAY seconds... ($i/$RETRIES)" && \
-        sleep $DELAY \
+        echo "Retrying in $DELAY seconds... ($i/$RETRIES)"
+        sleep $DELAY
       done
     EOT
     interpreter = ["bash", "-c"]
@@ -70,27 +70,27 @@ resource "null_resource" "update_secret" {
 }
 
 # Retrieve the certificate secret and copy to the kube-system namespace
-resource "null_resource" "update_secret_kibana" {
+resource "null_resource" "copy_secret" {
   provisioner "local-exec" {
     command = <<EOT
       aws eks update-kubeconfig --region us-east-1 --name sock-shop-eks && \
       
       # Wait for the secret to be created by cert-manager
-      WAIT_RETRIES=50 && \
-      WAIT_DELAY=45 && \
-      for i in $(seq 1 $WAIT_RETRIES); do \
+      WAIT_RETRIES=80
+      WAIT_DELAY=45
+      for i in $(seq 1 $WAIT_RETRIES); do
         kubectl get secret projectchigozie.me-tls -n sock-shop && break || \
-        echo "Waiting for the secret to be created... ($i/$WAIT_RETRIES)" && \
-        sleep $WAIT_DELAY \
+        echo "Waiting for the secret to be created... ($i/$WAIT_RETRIES)"
+        sleep $WAIT_DELAY
       done && \
       
       # Retry applying the secret in case of concurrent modification
-      RETRIES=5 && \
-      DELAY=5 && \
-      for i in $(seq 1 $RETRIES); do \
+      RETRIES=10
+      DELAY=5
+      for i in $(seq 1 $RETRIES); do
         kubectl get secret projectchigozie.me-tls -n sock-shop -o yaml | sed 's/namespace: sock-shop/namespace: kube-system/' | kubectl apply -f - && break || \
-        echo "Retrying in $DELAY seconds... ($i/$RETRIES)" && \
-        sleep $DELAY \
+        echo "Retrying in $DELAY seconds... ($i/$RETRIES)"
+        sleep $DELAY
       done
     EOT
     interpreter = ["bash", "-c"]
