@@ -166,15 +166,15 @@ spec:
             port:
               number: 3000
   - host: "alertmanager.${var.domain}"
-      http:
-        paths:
-        - path: /
-          pathType: Prefix
-          backend:
-            service:
-              name: alertmanager
-              port:
-                number: 9093
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: alertmanager
+            port:
+              number: 9093
 YAML
 }
 
