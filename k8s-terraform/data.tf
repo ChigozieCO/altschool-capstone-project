@@ -44,6 +44,7 @@ resource "null_resource" "update_secret" {
   provisioner "local-exec" {
     command = <<EOT
 aws eks update-kubeconfig --region us-east-1 --name sock-shop-eks && \
+sleep 5m && \
 kubectl get secret projectchigozie.me-tls -n sock-shop -o yaml | sed 's/namespace: sock-shop/namespace: monitoring/' | kubectl apply -f -
 EOT
     interpreter = ["bash", "-c"]
@@ -57,6 +58,7 @@ resource "null_resource" "update_secret_kibana" {
   provisioner "local-exec" {
     command = <<EOT
 aws eks update-kubeconfig --region us-east-1 --name sock-shop-eks && \
+sleep 5m && \
 kubectl get secret projectchigozie.me-tls -n sock-shop -o yaml | sed 's/namespace: sock-shop/namespace: kube-system/' | kubectl apply -f -
 EOT
     interpreter = ["bash", "-c"]
