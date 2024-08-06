@@ -43,9 +43,9 @@ data "aws_elb" "ingress_nginx_lb" {
 resource "null_resource" "update_secret" {
   provisioner "local-exec" {
     command = <<EOT
-      aws eks update-kubeconfig --region us-east-1 --name sock-shop-eks
-      kubectl get secret projectchigozie.me-tls -n sock-shop -o yaml | sed 's/namespace: sock-shop/namespace: monitoring/' | kubectl apply -f -
-    EOT
+aws eks update-kubeconfig --region us-east-1 --name sock-shop-eks && \
+kubectl get secret projectchigozie.me-tls -n sock-shop -o yaml | sed 's/namespace: sock-shop/namespace: monitoring/' | kubectl apply -f -
+EOT
     interpreter = ["bash", "-c"]
   }
   # Ensure this data source fetches after the service is created
@@ -56,9 +56,9 @@ resource "null_resource" "update_secret" {
 resource "null_resource" "update_secret_kibana" {
   provisioner "local-exec" {
     command = <<EOT
-      aws eks update-kubeconfig --region us-east-1 --name sock-shop-eks
-      kubectl get secret projectchigozie.me-tls -n sock-shop -o yaml | sed 's/namespace: sock-shop/namespace: monitoring/' | kubectl apply -f -
-    EOT
+aws eks update-kubeconfig --region us-east-1 --name sock-shop-eks && \
+kubectl get secret projectchigozie.me-tls -n sock-shop -o yaml | sed 's/namespace: sock-shop/namespace: kube-system/' | kubectl apply -f -
+EOT
     interpreter = ["bash", "-c"]
   }
   # Ensure this data source fetches after the service is created
