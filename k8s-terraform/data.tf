@@ -46,7 +46,7 @@ resource "null_resource" "update_secret" {
       aws eks update-kubeconfig --region us-east-1 --name sock-shop-eks && \
       
       # Wait for the secret to be created by cert-manager
-      WAIT_RETRIES=20 && \
+      WAIT_RETRIES=35 && \
       WAIT_DELAY=15 && \
       for i in $(seq 1 $WAIT_RETRIES); do \
         kubectl get secret projectchigozie.me-tls -n sock-shop && break || \
@@ -76,7 +76,7 @@ resource "null_resource" "update_secret_kibana" {
       aws eks update-kubeconfig --region us-east-1 --name sock-shop-eks && \
       
       # Wait for the secret to be created by cert-manager
-      WAIT_RETRIES=20 && \
+      WAIT_RETRIES=35 && \
       WAIT_DELAY=15 && \
       for i in $(seq 1 $WAIT_RETRIES); do \
         kubectl get secret projectchigozie.me-tls -n sock-shop && break || \
