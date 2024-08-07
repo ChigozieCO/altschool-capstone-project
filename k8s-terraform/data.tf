@@ -58,7 +58,8 @@ resource "null_resource" "copy_secret" {
       RETRIES=20
       DELAY=5
       for i in $(seq 1 $RETRIES); do
-        kubectl get secret projectchigozie.me-tls -n sock-shop -o yaml | sed 's/namespace: sock-shop/namespace: monitoring/' | kubectl apply -f - && break || \
+        SECRET=$(kubectl get secret projectchigozie.me-tls -n sock-shop -o yaml | sed 's/namespace: sock-shop/namespace: monitoring/')
+        echo "$SECRET" | kubectl apply -f - && break || \
         echo "Retrying in $DELAY seconds... ($i/$RETRIES)"
         sleep $DELAY
       done
@@ -88,7 +89,8 @@ resource "null_resource" "copy_secret_kibana" {
       RETRIES=20
       DELAY=5
       for i in $(seq 1 $RETRIES); do
-        kubectl get secret projectchigozie.me-tls -n sock-shop -o yaml | sed 's/namespace: sock-shop/namespace: kube-system/' | kubectl apply -f - && break || \
+        SECRET=$(kubectl get secret projectchigozie.me-tls -n sock-shop -o yaml | sed 's/namespace: sock-shop/namespace: kube-system/')
+        echo "$SECRET" | kubectl apply -f - && break || \
         echo "Retrying in $DELAY seconds... ($i/$RETRIES)"
         sleep $DELAY
       done
