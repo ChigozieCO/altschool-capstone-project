@@ -123,7 +123,7 @@ resource "aws_route53_record" "ingress_www_load_balancer" {
 
 # Create an Ingress resource using the kubectl_manifest resource for our monitoring resources
 resource "kubectl_manifest" "ingress_monitoring" {
-  depends_on = [ kubectl_manifest.cert_manager_cluster_issuer, null_resource.update_secret ]
+  depends_on = [ kubectl_manifest.cert_manager_cluster_issuer, null_resource.copy_secret ]
   yaml_body = <<YAML
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -180,7 +180,7 @@ YAML
 
 # Create an Ingress resource using the kubectl_manifest resource for kibana
 resource "kubectl_manifest" "ingress_kibana" {
-  depends_on = [ kubectl_manifest.cert_manager_cluster_issuer, null_resource.update_secret_kibana ]
+  depends_on = [ kubectl_manifest.cert_manager_cluster_issuer, null_resource.copy_secret_kibana ]
   yaml_body = <<YAML
 apiVersion: networking.k8s.io/v1
 kind: Ingress

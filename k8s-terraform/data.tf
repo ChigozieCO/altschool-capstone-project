@@ -70,7 +70,7 @@ resource "null_resource" "copy_secret" {
 }
 
 # Retrieve the certificate secret and copy to the kube-system namespace
-resource "null_resource" "copy_secret" {
+resource "null_resource" "copy_secret_kibana" {
   provisioner "local-exec" {
     command = <<EOT
       aws eks update-kubeconfig --region us-east-1 --name sock-shop-eks && \
