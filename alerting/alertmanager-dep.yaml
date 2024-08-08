@@ -22,9 +22,10 @@ spec:
               secretKeyRef:
                 name: slack-hook-url
                 key: SLACK_HOOK_URL
-        command: ["/bin/sh", "-c"]
+        command:
+          - "/bin/alertmanager"
         args:
-          - etc/alertmanager/config.yml
+          - "--config.file=/etc/alertmanager/config.yml"
         ports:
         - name: alertmanager
           containerPort: 9093
