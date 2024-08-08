@@ -13,21 +13,29 @@ spec:
       labels:
         app: alertmanager
     spec:
-      containers:
-      - name: alertmanager
-        image: prom/alertmanager:latest
+      initContainers:
+      - name: init-config
+        image: busybox
+        command:
+        - sh
+        - -c
+        - |
+          echo "Replacing API_URL_SECRET with actual Slack URL."
+          sed "s|API_URL_SECRET|${SLACK_HOOK_URL}|g" /etc/alertmanager/config.yml > /etc/alertmanager/config.tmp
+          mv /etc/alertmanager/config.tmp /etc/alertmanager/config.yml
         env:
           - name: SLACK_HOOK_URL
             valueFrom:
               secretKeyRef:
                 name: slack-hook-url
                 key: SLACK_HOOK_URL
-        command:
-          - "/bin/sh"
-        args:
-          - "-c"
-          - |
-            sed -i "s|API_URL_SECRET|${SLACK_HOOK_URL}|g" /etc/alertmanager/config.yml && exec /bin/alertmanager --config.file=/etc/alertmanager/config.yml
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/alertmanager/config.yml
+          subPath: config.yml
+      containers:
+      - name: alertmanager
+        image: prom/alertmanager:latest
         ports:
         - name: alertmanager
           containerPort: 9093
