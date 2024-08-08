@@ -71,7 +71,7 @@ resource "null_resource" "copy_secret" {
   depends_on = [kubectl_manifest.cert_manager_certificate]
 }
 
-# Retrieve the certificate secret and copy to the kube-system namespace
+# Retrieve the certificate secret and copy to the kube-logging namespace
 resource "null_resource" "copy_secret_kibana" {
   provisioner "local-exec" {
     command = <<EOT
@@ -91,8 +91,8 @@ resource "null_resource" "copy_secret_kibana" {
       DELAY=5
       for i in $(seq 1 $RETRIES); do
         kubectl get secret projectchigozie.me-tls -n sock-shop -o yaml | \
-        sed 's/namespace: sock-shop/namespace: kube-system/' | \
-        kubectl apply -f - -n kube-system && break || \
+        sed 's/namespace: sock-shop/namespace: kube-logging/' | \
+        kubectl apply -f - -n kube-logging && break || \
         echo "Retrying in $DELAY seconds... ($i/$RETRIES)"
         sleep $DELAY
       done
@@ -100,5 +100,5 @@ resource "null_resource" "copy_secret_kibana" {
     interpreter = ["bash", "-c"]
   }
   # Ensure this data source fetches after the service is created
-  depends_on = [kubectl_manifest.cert_manager_certificate]
+  depends_on = [kubectl_manifest.cert_manager_certificate, kubernetes_namespace.kube-logging]
 }

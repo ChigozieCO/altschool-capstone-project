@@ -28,3 +28,8 @@ variable "email" {
   description = "The email address to use in the creation of your SSL certificate"
   type = string
 }
+
+variable "slack-hook-url" {
+  description = "The URL of your slack incoming webhook"
+  type = string
+}

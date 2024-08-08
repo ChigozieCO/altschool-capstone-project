@@ -1,9 +1,35 @@
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kibana
+  namespace: kube-logging
+  labels:
+    app: kibana
+spec:
+  ports:
+  - port: 5601
+    targetPort: 5601
+  selector:
+    app: kibana
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kibana-config
+  namespace: kube-logging
+data:
+  kibana.yml: |
+    server.name: kibana
+    server.host: "0.0.0.0"
+    elasticsearch.hosts: [ "http://elasticsearch.kube-logging.svc.cluster.local:9200" ]
+    xpack.security.enabled: false  # Disable security if you are handling it via the subdomain and SSL
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: kibana
-  namespace: kube-system
+  namespace: kube-logging
   labels:
     app: kibana
 spec:
@@ -18,23 +44,35 @@ spec:
     spec:
       containers:
       - name: kibana
-        image: docker.elastic.co/kibana/kibana:7.17.0
+        image: docker.elastic.co/kibana/kibana:7.2.0
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 1Gi
+          requests:
+            cpu: 100m
+            memory: 512Mi
+        env:
+          - name: ELASTICSEARCH_URL
+            value: http://elasticsearch.kube-logging.svc.cluster.local:9200
         ports:
         - containerPort: 5601
-          name: http
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: kibana
-  labels:
-    app: kibana
-  namespace: kube-system
-spec:
-  type: NodePort
-  ports:
-  - port: 5601
-    targetPort: 5601
-    nodePort: 31601
-  selector:
-    app: kibana
+        livenessProbe:
+          httpGet:
+            path: /api/status
+            port: 5601
+          initialDelaySeconds: 60
+          timeoutSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /api/status
+            port: 5601
+          initialDelaySeconds: 30
+          timeoutSeconds: 10
+        volumeMounts:
+        - name: config-volume
+          mountPath: /usr/share/kibana/config
+      volumes:
+      - name: config-volume
+        configMap:
+          name: kibana-config

@@ -42,3 +42,4 @@ chmod u+x "$RUN_FROM/TFenv.sh"
 # Source the TFenv.sh script to export the variables into the current shell
 echo "Sourcing TFenv.sh..."
 source "$RUN_FROM/TFenv.sh"
+cd $RUN_FROM

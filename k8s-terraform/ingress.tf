@@ -110,7 +110,7 @@ resource "aws_route53_record" "ingress_load_balancer" {
 }
 
 # Route 53 record creation so that our ingress controller can point to subdomains of our domain name
-resource "aws_route53_record" "ingress_www_load_balancer" {
+resource "aws_route53_record" "ingress_subdomain_load_balancer" {
   zone_id = data.aws_route53_zone.selected.zone_id
   name    = "*.${var.domain}"
   type    = "A"
@@ -164,7 +164,7 @@ spec:
           service:
             name: grafana
             port:
-              number: 3000
+              number: 80
   - host: "alertmanager.${var.domain}"
     http:
       paths:
@@ -178,15 +178,22 @@ spec:
 YAML
 }
 
+# Create kube-logging namespace
+resource "kubernetes_namespace" "kube-logging" {
+  metadata {
+    name = "kube-logging"
+  }
+}
+
 # Create an Ingress resource using the kubectl_manifest resource for kibana
 resource "kubectl_manifest" "ingress_kibana" {
-  depends_on = [ kubectl_manifest.cert_manager_cluster_issuer, null_resource.copy_secret_kibana ]
+  depends_on = [ kubectl_manifest.cert_manager_cluster_issuer, null_resource.copy_secret_kibana, kubernetes_namespace.kube-logging ]
   yaml_body = <<YAML
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ingress
-  namespace: kube-system
+  namespace: kube-logging
   annotations:
     kubernetes.io/ingress.class: nginx
     cert-manager.io/cluster-issuer: "letsencrypt-staging"

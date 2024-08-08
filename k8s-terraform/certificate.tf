@@ -34,19 +34,14 @@ resource "kubernetes_namespace" "monitoring" {
   }
 }
 
-# # Copy the certificate secret from the sock-shop namespace to the monitoring namespace
-# resource "kubernetes_secret" "monitoring_secret" {
-#   depends_on = [local.cert_secret, kubernetes_namespace.monitoring]
-
-#   metadata {
-#     name      = local.cert_secret.metadata.name
-#     namespace = "monitoring"
-#   }
-
-#   data = {
-#     "tls.crt" = local.cert_secret.tls_crt
-#     "tls.key" = local.cert_secret.tls_key
-#   }
-
-#   type = "kubernetes.io/tls"
-# }
+# Create a kubernetes secret for alertmanager
+resource "kubernetes_secret" "slack" {
+  metadata {
+    name = "slack-hook-url"
+    namespace = kubernetes_namespace.monitoring.id
+  }
+  data = {
+    "SLACK_HOOK_URL" = var.slack-hook-url
+  }
+  depends_on = [ kubernetes_namespace.monitoring ]
+}

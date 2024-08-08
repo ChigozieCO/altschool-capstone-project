@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: alertmanager
+  namespace: monitoring
 spec:
   replicas: 1
   selector:
@@ -9,7 +10,6 @@ spec:
       app: alertmanager
   template:
     metadata:
-      name: alertmanager
       labels:
         app: alertmanager
     spec:
@@ -21,11 +21,10 @@ spec:
             valueFrom:
               secretKeyRef:
                 name: slack-hook-url
-                key: slack-hook-url
-        command: ['/bin/sh', '/etc/alertmanager/configure_secret.sh']
+                key: SLACK_HOOK_URL
+        command: ["/bin/sh", "c"]
         args:
-          - '-config.file=/etc/alertmanager/config.yml'
-          - '-storage.path=/alertmanager'
+          - etc/alertmanager/config.yml
         ports:
         - name: alertmanager
           containerPort: 9093
@@ -37,4 +36,4 @@ spec:
         configMap:
           name: alertmanager
       nodeSelector:
-        beta.kubernetes.io/os: linux
+        kubernetes.io/os: linux

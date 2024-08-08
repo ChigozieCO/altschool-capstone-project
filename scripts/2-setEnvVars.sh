@@ -32,3 +32,4 @@ fi
 echo "$TF_OUTPUT" | jq -r 'to_entries[] | "export " + .key + "=" + (.value.value | tostring)' > "$RUN_FROM/env.sh"
 echo "Environment variables export script has been created as env.sh."
 echo "Run the 3-connect-kubectl.sh script now to connect Kubectl to your EKS cluster"
+cd $RUN_FROM
