@@ -24,7 +24,7 @@ spec:
                 key: SLACK_HOOK_URL
         command: ["/bin/sh", "-c"]
         args:
-          - etc/alertmanager/config.yml
+          - "/etc/alertmanager/config.yml"
         ports:
         - name: alertmanager
           containerPort: 9093
