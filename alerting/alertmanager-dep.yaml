@@ -16,16 +16,25 @@ spec:
       containers:
       - name: alertmanager
         image: prom/alertmanager:latest
+        env:
+          - name: SLACK_HOOK_URL
+            valueFrom:
+              secretKeyRef:
+                name: slack-hook-url
+                key: SLACK_HOOK_URL
         command:
-          - "/bin/alertmanager"
+          - "/bin/sh"
         args:
-          - "--config.file=/etc/alertmanager/config.yml"
+          - "-c"
+          - |
+            sed -i "s|API_URL_SECRET|${SLACK_HOOK_URL}|g" /etc/alertmanager/config.yml && exec /bin/alertmanager --config.file=/etc/alertmanager/config.yml
         ports:
         - name: alertmanager
           containerPort: 9093
         volumeMounts:
         - name: config-volume
-          mountPath: /etc/alertmanager
+          mountPath: /etc/alertmanager/config.yml
+          subPath: config.yml
       volumes:
       - name: config-volume
         configMap:

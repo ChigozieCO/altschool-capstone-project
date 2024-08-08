@@ -7,7 +7,7 @@ data:
   config.yml: |-
     global:
       resolve_timeout: 5m
-      slack_api_url: 'https://hooks.slack.com/services/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'
+      slack_api_url: 'API_URL_SECRET'
 
     route:
       group_by: [cluster]
@@ -26,4 +26,4 @@ data:
         send_resolved: true
         title: "{{ range .Alerts }}{{ .Annotations.summary }}\n{{ end }}"
         text: "{{ range .Alerts }}{{ .Annotations.description }}\n{{ end }}"
-        api_url: 'https://hooks.slack.com/services/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'
+        api_url: 'API_URL_SECRET'
