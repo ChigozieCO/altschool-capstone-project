@@ -16,12 +16,6 @@ spec:
       containers:
       - name: alertmanager
         image: prom/alertmanager:latest
-        env:
-          - name: SLACK_HOOK_URL
-            valueFrom:
-              secretKeyRef:
-                name: slack-hook-url
-                key: SLACK_HOOK_URL
         command:
           - "/bin/alertmanager"
         args:

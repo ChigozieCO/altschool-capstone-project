@@ -33,15 +33,3 @@ resource "kubernetes_namespace" "monitoring" {
     name = "monitoring"
   }
 }
-
-# Create a kubernetes secret for alertmanager
-resource "kubernetes_secret" "slack" {
-  metadata {
-    name = "slack-hook-url"
-    namespace = kubernetes_namespace.monitoring.id
-  }
-  data = {
-    "SLACK_HOOK_URL" = var.slack_hook_url
-  }
-  depends_on = [ kubernetes_namespace.monitoring ]
-}
