@@ -38,8 +38,10 @@ spec:
         resources:
             limits:
               cpu: 1000m
+              memory: 1Gi
             requests:
               cpu: 100m
+              memory: 512Mi
         ports:
         - containerPort: 9200
           name: rest
@@ -82,7 +84,6 @@ spec:
         command: ["sh", "-c", "ulimit -n 65536"]
         securityContext:
           privileged: true
-  volumeClaimTemplates: []
-  volumeMounts:
-  - name: data
-    emptyDir: {}
+      volumes:
+      - name: data
+        emptyDir: {}

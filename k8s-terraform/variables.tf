@@ -29,7 +29,7 @@ variable "email" {
   type = string
 }
 
-variable "slack-hook-url" {
+variable "slack_hook_url" {
   description = "The URL of your slack incoming webhook"
   type = string
 }

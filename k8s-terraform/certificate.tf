@@ -41,7 +41,7 @@ resource "kubernetes_secret" "slack" {
     namespace = kubernetes_namespace.monitoring.id
   }
   data = {
-    "SLACK_HOOK_URL" = var.slack-hook-url
+    "SLACK_HOOK_URL" = var.slack_hook_url
   }
   depends_on = [ kubernetes_namespace.monitoring ]
 }
