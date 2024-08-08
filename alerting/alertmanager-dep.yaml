@@ -13,41 +13,27 @@ spec:
       labels:
         app: alertmanager
     spec:
-      initContainers:
-        - name: init-config
-          image: busybox
-          command:
-            - sh
-            - -c
-            - |
-              echo "Copying and replacing API_URL_SECRET with actual Slack URL."
-              cp /etc/alertmanager/config.yml /config/config.yml && \
-              sed -i "s|API_URL_SECRET|${SLACK_HOOK_URL}|g" /config/config.yml
-          env:
-            - name: SLACK_HOOK_URL
-              valueFrom:
-                secretKeyRef:
-                  name: slack-hook-url
-                  key: SLACK_HOOK_URL
-          volumeMounts:
-            - name: config-volume
-              mountPath: /config
       containers:
+      - name: alertmanager
+        image: prom/alertmanager:latest
+        env:
+          - name: SLACK_HOOK_URL
+            valueFrom:
+              secretKeyRef:
+                name: slack-hook-url
+                key: SLACK_HOOK_URL
+        command: ["/bin/sh", "-c"]
+        args:
+          - etc/alertmanager/config.yml
+        ports:
         - name: alertmanager
-          image: prom/alertmanager:latest
-          command:
-            - "/bin/alertmanager"
-          args:
-            - "--config.file=/etc/alertmanager/config.yml"
-          ports:
-            - name: alertmanager
-              containerPort: 9093
-          volumeMounts:
-            - name: config-volume
-              mountPath: /etc/alertmanager/config.yml
-              subPath: config.yml
-      volumes:
+          containerPort: 9093
+        volumeMounts:
         - name: config-volume
-          emptyDir: {}
+          mountPath: /etc/alertmanager
+      volumes:
+      - name: config-volume
+        configMap:
+          name: alertmanager
       nodeSelector:
         kubernetes.io/os: linux
