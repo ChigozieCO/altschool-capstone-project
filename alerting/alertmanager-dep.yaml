@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -22,12 +23,16 @@ spec:
               secretKeyRef:
                 name: slack-hook-url
                 key: SLACK_HOOK_URL
-        volumeMounts:
-        - name: config-volume
-          mountPath: /etc/alertmanager
+        command: ['/bin/sh', '/etc/alertmanager/configure_secret.sh']
+        args:
+          - '-config.file=/etc/alertmanager/config.yml'
+          - '-storage.path=/alertmanager'
         ports:
         - name: alertmanager
           containerPort: 9093
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/alertmanager
       volumes:
       - name: config-volume
         configMap:
