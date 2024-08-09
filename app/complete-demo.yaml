@@ -25,8 +25,8 @@ spec:
       - name: carts
         image: weaveworksdemos/carts:0.4.8
         env:
-         - name: JAVA_OPTS
-           value: -Xms64m -Xmx128m -XX:+UseG1GC -Djava.security.egd=file:/dev/urandom -Dspring.zipkin.enabled=false
+        - name: JAVA_OPTS
+          value: -Xms64m -Xmx128m -XX:+UseG1GC -Djava.security.egd=file:/dev/urandom -Dspring.zipkin.enabled=false
         resources:
           limits:
             cpu: 300m
@@ -41,17 +41,17 @@ spec:
           runAsUser: 10001
           capabilities:
             drop:
-              - all
+            - all
             add:
-              - NET_BIND_SERVICE
+            - NET_BIND_SERVICE
           readOnlyRootFilesystem: true
         volumeMounts:
         - mountPath: /tmp
           name: tmp-volume
       volumes:
-        - name: tmp-volume
-          emptyDir:
-            medium: Memory
+      - name: tmp-volume
+        emptyDir:
+          medium: Memory
       nodeSelector:
         kubernetes.io/os: linux
 ---
@@ -60,7 +60,7 @@ kind: Service
 metadata:
   name: carts
   annotations:
-        prometheus.io/scrape: 'true'
+    prometheus.io/scrape: 'true'
   labels:
     name: carts
   namespace: sock-shop
@@ -98,19 +98,19 @@ spec:
         securityContext:
           capabilities:
             drop:
-              - all
+            - all
             add:
-              - CHOWN
-              - SETGID
-              - SETUID
+            - CHOWN
+            - SETGID
+            - SETUID
           readOnlyRootFilesystem: true
         volumeMounts:
         - mountPath: /tmp
           name: tmp-volume
       volumes:
-        - name: tmp-volume
-          emptyDir:
-            medium: Memory
+      - name: tmp-volume
+        emptyDir:
+          medium: Memory
       nodeSelector:
         kubernetes.io/os: linux
 ---
@@ -166,9 +166,9 @@ spec:
           runAsUser: 10001
           capabilities:
             drop:
-              - all
+            - all
             add:
-              - NET_BIND_SERVICE
+            - NET_BIND_SERVICE
           readOnlyRootFilesystem: true
         livenessProbe:
           httpGet:
@@ -190,7 +190,7 @@ kind: Service
 metadata:
   name: catalogue
   annotations:
-        prometheus.io/scrape: 'true'
+    prometheus.io/scrape: 'true'
   labels:
     name: catalogue
   namespace: sock-shop
@@ -283,7 +283,7 @@ spec:
           runAsUser: 10001
           capabilities:
             drop:
-              - all
+            - all
           readOnlyRootFilesystem: true
         livenessProbe:
           httpGet:
@@ -305,7 +305,7 @@ kind: Service
 metadata:
   name: front-end
   annotations:
-        prometheus.io/scrape: 'true'
+    prometheus.io/scrape: 'true'
   labels:
     name: front-end
   namespace: sock-shop
@@ -339,8 +339,8 @@ spec:
       - name: orders
         image: weaveworksdemos/orders:0.4.7
         env:
-         - name: JAVA_OPTS
-           value: -Xms64m -Xmx128m -XX:+UseG1GC -Djava.security.egd=file:/dev/urandom -Dspring.zipkin.enabled=false
+        - name: JAVA_OPTS
+          value: -Xms64m -Xmx128m -XX:+UseG1GC -Djava.security.egd=file:/dev/urandom -Dspring.zipkin.enabled=false
         resources:
           limits:
             cpu: 500m
@@ -355,9 +355,9 @@ spec:
           runAsUser: 10001
           capabilities:
             drop:
-              - all
+            - all
             add:
-              - NET_BIND_SERVICE
+            - NET_BIND_SERVICE
           readOnlyRootFilesystem: true
         volumeMounts:
         - mountPath: /tmp
@@ -374,7 +374,7 @@ kind: Service
 metadata:
   name: orders
   annotations:
-        prometheus.io/scrape: 'true'
+    prometheus.io/scrape: 'true'
   labels:
     name: orders
   namespace: sock-shop
@@ -412,19 +412,19 @@ spec:
         securityContext:
           capabilities:
             drop:
-              - all
+            - all
             add:
-              - CHOWN
-              - SETGID
-              - SETUID
+            - CHOWN
+            - SETGID
+            - SETUID
           readOnlyRootFilesystem: true
         volumeMounts:
         - mountPath: /tmp
           name: tmp-volume
       volumes:
-        - name: tmp-volume
-          emptyDir:
-            medium: Memory
+      - name: tmp-volume
+        emptyDir:
+          medium: Memory
       nodeSelector:
         kubernetes.io/os: linux
 ---
@@ -477,9 +477,9 @@ spec:
           runAsUser: 10001
           capabilities:
             drop:
-              - all
+            - all
             add:
-              - NET_BIND_SERVICE
+            - NET_BIND_SERVICE
           readOnlyRootFilesystem: true
         livenessProbe:
           httpGet:
@@ -501,7 +501,7 @@ kind: Service
 metadata:
   name: payment
   annotations:
-        prometheus.io/scrape: 'true'
+    prometheus.io/scrape: 'true'
   labels:
     name: payment
   namespace: sock-shop
@@ -534,8 +534,8 @@ spec:
       - name: queue-master
         image: weaveworksdemos/queue-master:0.3.1
         env:
-         - name: JAVA_OPTS
-           value: -Xms64m -Xmx128m -XX:+UseG1GC -Djava.security.egd=file:/dev/urandom -Dspring.zipkin.enabled=false
+        - name: JAVA_OPTS
+          value: -Xms64m -Xmx128m -XX:+UseG1GC -Djava.security.egd=file:/dev/urandom -Dspring.zipkin.enabled=false
         resources:
           limits:
             cpu: 300m
@@ -553,7 +553,7 @@ kind: Service
 metadata:
   name: queue-master
   annotations:
-        prometheus.io/scrape: 'true'
+    prometheus.io/scrape: 'true'
   labels:
     name: queue-master
   namespace: sock-shop
@@ -595,12 +595,12 @@ spec:
         securityContext:
           capabilities:
             drop:
-              - all
+            - all
             add:
-              - CHOWN
-              - SETGID
-              - SETUID
-              - DAC_OVERRIDE
+            - CHOWN
+            - SETGID
+            - SETUID
+            - DAC_OVERRIDE
           readOnlyRootFilesystem: true
       - name: rabbitmq-exporter
         image: kbudde/rabbitmq-exporter
@@ -615,8 +615,8 @@ kind: Service
 metadata:
   name: rabbitmq
   annotations:
-        prometheus.io/scrape: 'true'
-        prometheus.io/port: '9090'
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: '9090'
   labels:
     name: rabbitmq
   namespace: sock-shop
@@ -661,11 +661,11 @@ spec:
         securityContext:
           capabilities:
             drop:
-              - all
+            - all
             add:
-              - CHOWN
-              - SETGID
-              - SETUID
+            - CHOWN
+            - SETGID
+            - SETUID
           readOnlyRootFilesystem: true
       nodeSelector:
         kubernetes.io/os: linux
@@ -706,10 +706,10 @@ spec:
       - name: shipping
         image: weaveworksdemos/shipping:0.4.8
         env:
-         - name: ZIPKIN
-           value: zipkin.jaeger.svc.cluster.local
-         - name: JAVA_OPTS
-           value: -Xms64m -Xmx128m -XX:+UseG1GC -Djava.security.egd=file:/dev/urandom -Dspring.zipkin.enabled=false
+        - name: ZIPKIN
+          value: zipkin.jaeger.svc.cluster.local
+        - name: JAVA_OPTS
+          value: -Xms64m -Xmx128m -XX:+UseG1GC -Djava.security.egd=file:/dev/urandom -Dspring.zipkin.enabled=false
         resources:
           limits:
             cpu: 300m
@@ -724,9 +724,9 @@ spec:
           runAsUser: 10001
           capabilities:
             drop:
-              - all
+            - all
             add:
-              - NET_BIND_SERVICE
+            - NET_BIND_SERVICE
           readOnlyRootFilesystem: true
         volumeMounts:
         - mountPath: /tmp
@@ -743,7 +743,7 @@ kind: Service
 metadata:
   name: shipping
   annotations:
-        prometheus.io/scrape: 'true'
+    prometheus.io/scrape: 'true'
   labels:
     name: shipping
   namespace: sock-shop
@@ -793,9 +793,9 @@ spec:
           runAsUser: 10001
           capabilities:
             drop:
-              - all
+            - all
             add:
-              - NET_BIND_SERVICE
+            - NET_BIND_SERVICE
           readOnlyRootFilesystem: true
         livenessProbe:
           httpGet:
@@ -817,7 +817,7 @@ kind: Service
 metadata:
   name: user
   annotations:
-        prometheus.io/scrape: 'true'
+    prometheus.io/scrape: 'true'
   labels:
     name: user
   namespace: sock-shop
@@ -857,11 +857,11 @@ spec:
         securityContext:
           capabilities:
             drop:
-              - all
+            - all
             add:
-              - CHOWN
-              - SETGID
-              - SETUID
+            - CHOWN
+            - SETGID
+            - SETUID
           readOnlyRootFilesystem: true
         volumeMounts:
         - mountPath: /tmp
