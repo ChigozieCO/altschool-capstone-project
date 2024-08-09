@@ -26,5 +26,12 @@ spec:
         image: weaveworksdemos/load-test:0.1.1
         command: ["/bin/sh"]
         args: ["-c", "while true; do curl -X GET http://front-end.sock-shop.svc.cluster.local/invalid-endpoint || true; sleep 1; done"]
+        # Added healthcheck to ensure container restarts if it fails
+        livenessProbe:
+          httpGet:
+            path: /invalid-endpoint
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 10
       nodeSelector:
         kubernetes.io/os: linux
