@@ -1,24 +1,21 @@
----
 kind: ConfigMap
 apiVersion: v1
 metadata:
   name: alertmanager
   namespace: monitoring
 data:
-  config.yml: |-
+  alertmanager.yml: |-
     global:
       resolve_timeout: 5m
       slack_api_url: https://hooks.slack.com/services/API_URL_SECRET
 
     route:
       group_by: [cluster]
-      # If an alert isn't caught by a route, send it slack.
       receiver: slack-notification
       routes:
         - match:
             severity: slack
           receiver: slack-notification
-
 
     receivers:
     - name: 'slack-notification'
@@ -29,7 +26,7 @@ data:
         text: "{{ range .Alerts }}{{ .Annotations.description }}\n{{ end }}"
         api_url: https://hooks.slack.com/services/API_URL_SECRET
 
-    configure_secret.sh: |-
-    echo 'Configuring Slack hook url.'
-    sed -i -e s,API_URL_SECRET,"$SLACK_HOOK_URL",g /etc/alertmanager/config.yml
+  configure_secret.sh: |-
+    echo 'Configuring Slack hook URL.'
+    sed -i -e s,API_URL_SECRET,"$SLACK_HOOK_URL",g /etc/alertmanager/alertmanager.yml
     exec /bin/alertmanager $*

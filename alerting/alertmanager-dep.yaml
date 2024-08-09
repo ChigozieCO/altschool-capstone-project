@@ -1,4 +1,3 @@
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -25,17 +24,19 @@ spec:
                 key: SLACK_HOOK_URL
         command: ['/bin/sh', '/etc/alertmanager/configure_secret.sh']
         args:
-          - '-config.file=/etc/config/config.yml'
-          - '-storage.path=/alertmanager'
+          - '--config.file=/etc/alertmanager/alertmanager.yml'
+          - '--storage.path=/alertmanager'
         ports:
         - name: alertmanager
           containerPort: 9093
         volumeMounts:
         - name: config-volume
-          mountPath: /etc/config
+          mountPath: /etc/alertmanager
+          defaultMode: 0500
       volumes:
       - name: config-volume
         configMap:
           name: alertmanager
+          defaultMode: 0500
       nodeSelector:
         kubernetes.io/os: linux
