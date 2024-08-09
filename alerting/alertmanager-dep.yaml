@@ -32,7 +32,6 @@ spec:
         volumeMounts:
         - name: config-volume
           mountPath: /etc/alertmanager
-          defaultMode: 0500
       volumes:
       - name: config-volume
         configMap:
