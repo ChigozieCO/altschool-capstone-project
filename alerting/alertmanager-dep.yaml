@@ -23,16 +23,16 @@ spec:
               secretKeyRef:
                 name: slack-hook-url
                 key: SLACK_HOOK_URL
-        command: ['/bin/sh', '/etc/alertmanager/configure_secret.sh']
+        command: ['/bin/sh', '/etc/config/configure_secret.sh']
         args:
-          - '-config.file=/etc/alertmanager/config.yml'
+          - '-config.file=/etc/config/config.yml'
           - '-storage.path=/alertmanager'
         ports:
         - name: alertmanager
           containerPort: 9093
         volumeMounts:
         - name: config-volume
-          mountPath: /etc/alertmanager
+          mountPath: /etc/config
       volumes:
       - name: config-volume
         configMap:
