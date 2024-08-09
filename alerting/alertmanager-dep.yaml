@@ -16,6 +16,8 @@ spec:
       containers:
       - name: alertmanager
         image: prom/alertmanager:latest
+        securityContext:
+          runAsUser: 1000
         env:
           - name: SLACK_HOOK_URL
             valueFrom:
@@ -36,6 +38,5 @@ spec:
       - name: config-volume
         configMap:
           name: alertmanager
-          defaultMode: 0500
       nodeSelector:
         kubernetes.io/os: linux
