@@ -24,7 +24,7 @@ data:
       rules:
       - alert: InstanceDown
         expr: count(up) < 3 #2 for the first group + 1 for the second group
-        for: 10s
+        for: 5m
         labels:
           severity: critical
         annotations:
