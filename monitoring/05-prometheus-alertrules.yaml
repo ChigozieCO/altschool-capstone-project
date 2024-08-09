@@ -19,3 +19,43 @@ data:
         annotations:
           summary: "High HTTP 500 error rates"
           description: "Rate of HTTP 500 errors per 5 minutes: {{ $value }}"
+
+    - name: InstanceAlerts
+      rules:
+      - alert: InstanceDown
+        expr: count(up) < 3 #2 for the first group + 1 for the second group
+        for: 10s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Instance down"
+          description: "Instance {{ $labels.instance }} is down."
+
+    - name: Node Exporter Alerts
+      rules:
+      - alert: HighMemoryUsage
+        expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes > 0.8
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage on {{ $labels.instance }}"
+          description: "Memory usage is above 80%."
+
+      - alert: HighCPUUsage
+        expr: rate(node_cpu_seconds_total{mode="idle"}[5m]) < 0.2
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage on {{ $labels.instance }}"
+          description: "CPU usage is above 80%."
+
+      - alert: HighDiskUsage
+        expr: (node_filesystem_size_bytes - node_filesystem_free_bytes) / node_filesystem_size_bytes > 0.9
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High disk usage on {{ $labels.instance }}"
+          description: "Disk usage is above 90%."
