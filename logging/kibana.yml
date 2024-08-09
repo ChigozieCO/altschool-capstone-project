@@ -46,13 +46,6 @@ spec:
       containers:
       - name: kibana
         image: docker.elastic.co/kibana/kibana:7.2.0
-        resources:
-          limits:
-            cpu: 1000m
-            memory: 1Gi
-          requests:
-            cpu: 100m
-            memory: 512Mi
         env:
           - name: ELASTICSEARCH_URL
             value: http://elasticsearch.kube-logging.svc.cluster.local:9200
