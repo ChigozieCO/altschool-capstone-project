@@ -82,9 +82,9 @@ data:
       <match **>
         @type elasticsearch
         @id elasticsearch
-        host "#{ENV['FLUENT_ELASTICSEARCH_HOST']}"
-        port "#{ENV['FLUENT_ELASTICSEARCH_PORT']}"
-        scheme "#{ENV['FLUENT_ELASTICSEARCH_SCHEME']}"
+        host "elasticsearch.kube-logging.svc.cluster.local"
+        port "9200"
+        scheme "http"
         path ""
         logstash_format true
         logstash_prefix fluentd
