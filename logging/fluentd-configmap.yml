@@ -4,6 +4,9 @@ kind: ConfigMap
 metadata:
   name: fluentd-config
   namespace: kube-logging
+  labels:
+    app: fluentd
+    kubernetes.io/cluster-service: "true"
 data:
   fluent.conf: |
     <source>
