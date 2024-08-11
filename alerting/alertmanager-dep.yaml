@@ -1,4 +1,4 @@
-apiVersion: apps/v1
+apiVersion: apps/v2
 kind: Deployment
 metadata:
   name: alertmanager
@@ -34,6 +34,8 @@ spec:
         volumeMounts:
         - name: config-volume
           mountPath: /etc/alertmanager
+        securityContext:
+          readOnlyRootFilesystem: false
       volumes:
       - name: config-volume
         configMap:

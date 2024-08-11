@@ -1,5 +1,5 @@
 kind: ConfigMap
-apiVersion: v1
+apiVersion: v2
 metadata:
   name: alertmanager
   namespace: monitoring
@@ -28,5 +28,6 @@ data:
 
   configure_secret.sh: |-
     echo 'Configuring Slack hook URL.'
+    chmod +x /etc/alertmanager/configure_secret.sh
     sed -i -e s,API_URL_SECRET,"$SLACK_HOOK_URL",g /etc/alertmanager/alertmanager.yml
     exec /bin/alertmanager $*
