@@ -29,7 +29,7 @@ spec:
           - |
             echo "Before substitution:" && cat /etc/alertmanager/alertmanager.yml && \
             cp /etc/alertmanager/alertmanager.yml /tmp/alertmanager.yml && \
-            sed -i -e s,http://placeholder,"$SLACK_HOOK_URL"g /tmp/alertmanager.yml && \
+            sed -i -e s,http://placeholder,"$SLACK_HOOK_URL",g /tmp/alertmanager.yml && \
             echo "After substitution:" && cat /tmp/alertmanager.yml && \
             exec /bin/alertmanager --config.file=/tmp/alertmanager.yml --storage.path=/alertmanager
         ports:
