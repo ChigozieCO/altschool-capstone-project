@@ -19,10 +19,12 @@ spec:
       initContainers:
       - name: init-config
         image: busybox
-        command: ['sh', '-c', 'cp /fluentd/etc/fluent.conf /etc/fluentd/fluent.conf']
+        command: ['sh', '-c', 'mkdir -p /etc/fluentd && cp /fluentd/etc/fluent.conf /etc/fluentd/fluent.conf']
         volumeMounts:
         - name: config-volume
           mountPath: /fluentd/etc
+        - name: fluentd-config-volume
+          mountPath: /etc/fluentd
       containers:
       - name: fluentd
         image: fluent/fluentd-kubernetes-daemonset:v1.4.2-debian-elasticsearch-1.1
