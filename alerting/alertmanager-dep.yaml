@@ -25,12 +25,17 @@ spec:
         args:
           - '--config.file=/etc/alertmanager/alertmanager.yml'
           - '--storage.path=/alertmanager'
+        command: ["/bin/sh", "-c"]
+        args:
+          - /etc/alertmanager/init.sh
         ports:
         - name: alertmanager
           containerPort: 9093
         volumeMounts:
         - name: config-volume
           mountPath: /etc/alertmanager
+        - name: init-script
+          mountPath: /etc/alertmanager/init.sh
         securityContext:
           readOnlyRootFilesystem: false
       volumes:

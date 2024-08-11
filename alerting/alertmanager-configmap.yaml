@@ -7,7 +7,7 @@ data:
   alertmanager.yml: |-
     global:
       resolve_timeout: 5m
-      slack_api_url: "${SLACK_HOOK_URL}"
+      slack_api_url: "http://placeholder"
 
     route:
       group_by: [cluster]
@@ -24,4 +24,9 @@ data:
         send_resolved: true
         title: "{{ range .Alerts }}{{ .Annotations.summary }}\n{{ end }}"
         text: "{{ range .Alerts }}{{ .Annotations.description }}\n{{ end }}"
-        api_url: "${SLACK_HOOK_URL}"
+        api_url: "http://placeholder"
+
+  init.sh: |-
+    #!/bin/sh
+    sed -i "s|http://placeholder|$SLACK_HOOK_URL|g" /etc/alertmanager/alertmanager.yml
+    exec /bin/alertmanager --config.file=/etc/alertmanager/alertmanager.yml --storage.path=/alertmanager
