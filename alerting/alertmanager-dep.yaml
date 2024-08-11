@@ -36,11 +36,18 @@ spec:
           mountPath: /etc/alertmanager
         - name: init-script
           mountPath: /etc/alertmanager/init.sh
+          subPath: init.sh
         securityContext:
           readOnlyRootFilesystem: false
       volumes:
       - name: config-volume
         configMap:
           name: alertmanager
+      - name: init-script
+        configMap:
+          name: alertmanager
+          items:
+            - key: init.sh
+              path: init.sh
       nodeSelector:
         kubernetes.io/os: linux
