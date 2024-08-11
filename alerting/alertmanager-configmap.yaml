@@ -14,7 +14,7 @@ data:
       receiver: slack-notification
       routes:
         - match:
-            severity: slack
+            severity: critical|warning|slack
           receiver: slack-notification
 
     receivers:
