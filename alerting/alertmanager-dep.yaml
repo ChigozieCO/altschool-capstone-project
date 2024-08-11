@@ -16,16 +16,12 @@ spec:
       containers:
       - name: alertmanager
         image: prom/alertmanager:latest
-        securityContext:
-          runAsUser: 1000
-          readOnlyRootFilesystem: false
         env:
           - name: SLACK_HOOK_URL
             valueFrom:
               secretKeyRef:
                 name: slack-hook-url
                 key: SLACK_HOOK_URL
-        command: ['/bin/sh', '/etc/alertmanager/configure_secret.sh']
         args:
           - '--config.file=/etc/alertmanager/alertmanager.yml'
           - '--storage.path=/alertmanager'

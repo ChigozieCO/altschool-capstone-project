@@ -7,7 +7,7 @@ data:
   alertmanager.yml: |-
     global:
       resolve_timeout: 5m
-      slack_api_url: https://hooks.slack.com/services/API_URL_SECRET
+      slack_api_url: "${SLACK_HOOK_URL}"
 
     route:
       group_by: [cluster]
@@ -24,10 +24,4 @@ data:
         send_resolved: true
         title: "{{ range .Alerts }}{{ .Annotations.summary }}\n{{ end }}"
         text: "{{ range .Alerts }}{{ .Annotations.description }}\n{{ end }}"
-        api_url: https://hooks.slack.com/services/API_URL_SECRET
-
-  configure_secret.sh: |-
-    echo 'Configuring Slack hook URL.'
-    chmod +x /etc/alertmanager/configure_secret.sh
-    sed -i -e s,API_URL_SECRET,"$SLACK_HOOK_URL",g /etc/alertmanager/alertmanager.yml
-    exec /bin/alertmanager $*
+        api_url: "${SLACK_HOOK_URL}"
