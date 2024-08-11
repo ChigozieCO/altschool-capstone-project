@@ -13,6 +13,8 @@ spec:
       labels:
         app: alertmanager
     spec:
+      securityContext:
+        fsGroup: 2000 
       containers:
       - name: alertmanager
         image: prom/alertmanager:latest
@@ -39,7 +41,6 @@ spec:
         securityContext:
           runAsUser: 1000
           runAsGroup: 3000
-          fsGroup: 2000
       volumes:
       - name: config-volume
         configMap:
