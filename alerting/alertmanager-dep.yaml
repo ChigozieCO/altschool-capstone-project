@@ -26,8 +26,6 @@ spec:
         args:
           - |
             sed -i "s|http://placeholder|$SLACK_HOOK_URL|g" /etc/alertmanager/alertmanager.yml && exec /bin/alertmanager --config.file=/etc/alertmanager/alertmanager.yml --storage.path=/alertmanager
-        securityContext:
-          readOnlyRootFilesystem
         ports:
         - name: alertmanager
           containerPort: 9093
