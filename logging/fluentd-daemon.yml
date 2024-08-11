@@ -22,7 +22,7 @@ spec:
         command: ['sh', '-c', 'cp /fluentd/etc/fluent.conf /etc/fluentd/fluent.conf']
         volumeMounts:
         - name: config-volume
-          mountPath: /etc/fluentd
+          mountPath: /fluentd/etc
       containers:
       - name: fluentd
         image: fluent/fluentd-kubernetes-daemonset:v1.4.2-debian-elasticsearch-1.1
