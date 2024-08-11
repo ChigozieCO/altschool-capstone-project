@@ -7,7 +7,7 @@ data:
   alertmanager.yml: |-
     global:
       resolve_timeout: 5m
-      slack_api_url: ${SLACK_HOOK_URL}
+      slack_api_url: "${SLACK_HOOK_URL}"
 
     route:
       group_by: [cluster]
@@ -24,4 +24,4 @@ data:
         send_resolved: true
         title: "{{ range .Alerts }}{{ .Annotations.summary }}\n{{ end }}"
         text: "{{ range .Alerts }}{{ .Annotations.description }}\n{{ end }}"
-        api_url: ${SLACK_HOOK_URL}
+        api_url: "${SLACK_HOOK_URL}"
