@@ -18,6 +18,7 @@ spec:
         image: prom/alertmanager:latest
         securityContext:
           runAsUser: 1000
+          readOnlyRootFilesystem: false
         env:
           - name: SLACK_HOOK_URL
             valueFrom:
