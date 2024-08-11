@@ -25,21 +25,24 @@ spec:
         command: ["/bin/sh", "-c"]
         args:
           - |
-            echo "Before substitution:" && cat /etc/alertmanager/alertmanager.yml && \
-            sed -i -e s,http://placeholder,"$SLACK_HOOK_URL",g /etc/alertmanager/alertmanager.yml && \
-            echo "After substitution:" && cat /etc/alertmanager/alertmanager.yml && \
-            exec /bin/alertmanager --config.file=/etc/alertmanager/alertmanager.yml --storage.path=/alertmanager
+            cp /etc/alertmanager/alertmanager.yml /tmp/alertmanager.yml && \
+            sed -i -e s,http://placeholder,"$SLACK_HOOK_URL",g /tmp/alertmanager.yml && \
+            exec /bin/alertmanager --config.file=/tmp/alertmanager.yml --storage.path=/alertmanager
         ports:
         - name: alertmanager
           containerPort: 9093
         volumeMounts:
         - name: config-volume
           mountPath: /etc/alertmanager
+        - name: tmp-volume
+          mountPath: /tmp
         securityContext:
           readOnlyRootFilesystem: false
       volumes:
       - name: config-volume
         configMap:
           name: alertmanager
+      - name: tmp-volume
+        emptyDir: {}
       nodeSelector:
         kubernetes.io/os: linux
