@@ -13,9 +13,10 @@ data:
     alerting:
       alertmanagers:
       - scheme: http
+      - api_version: v1
         static_configs:
         - targets:
-          - "alertmanager.monitoring.svc.cluster.local:9094"
+          - "alertmanager.monitoring.svc.cluster.local:9093"
     scrape_configs:
     - job_name: 'kubernetes-apiservers'
       kubernetes_sd_configs:
