@@ -13,8 +13,6 @@ spec:
       labels:
         app: alertmanager
     spec:
-      securityContext:
-        fsGroup: 2000 
       containers:
       - name: alertmanager
         image: prom/alertmanager:latest
@@ -27,25 +25,21 @@ spec:
         command: ["/bin/sh", "-c"]
         args:
           - |
-            cp /etc/alertmanager/alertmanager.yml /tmp/alertmanager.yml && \
-            sed -i -e s,http://placeholder,"$SLACK_HOOK_URL",g /tmp/alertmanager.yml && \
-            exec /bin/alertmanager --config.file=/tmp/alertmanager.yml --storage.path=/alertmanager
+            echo "Before substitution:" && cat /etc/alertmanager/alertmanager.yml && \
+            sed -i -e s,http://placeholder,"$SLACK_HOOK_URL",g /etc/alertmanager/alertmanager.yml && \
+            echo "After substitution:" && cat /etc/alertmanager/alertmanager.yml && \
+            exec /bin/alertmanager --config.file=/etc/alertmanager/alertmanager.yml --storage.path=/alertmanager
         ports:
         - name: alertmanager
           containerPort: 9093
         volumeMounts:
         - name: config-volume
           mountPath: /etc/alertmanager
-        - name: tmp-volume
-          mountPath: /tmp
         securityContext:
-          runAsUser: 1000
-          runAsGroup: 3000
+          readOnlyRootFilesystem: false
       volumes:
       - name: config-volume
         configMap:
           name: alertmanager
-      - name: tmp-volume
-        emptyDir: {}
       nodeSelector:
         kubernetes.io/os: linux
