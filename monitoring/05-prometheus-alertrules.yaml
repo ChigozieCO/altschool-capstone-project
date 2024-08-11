@@ -23,13 +23,13 @@ data:
     - name: InstanceAlerts
       rules:
       - alert: InstanceDown
-        expr: count(up) < 3 #2 for the first group + 1 for the second group
-        for: 5m
+        expr: up == 0
+        for: 1m
         labels:
           severity: critical
         annotations:
           summary: "Instance down"
-          description: "Instance {{ $labels.instance }} is down."
+          description: "Instance {{ $labels.instance }} of job {{ $labels.job }} has been down for more than 1 minute."
 
     - name: Node Exporter Alerts
       rules:
