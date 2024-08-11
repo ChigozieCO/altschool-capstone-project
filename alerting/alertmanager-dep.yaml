@@ -32,6 +32,8 @@ spec:
         volumeMounts:
         - name: config-volume
           mountPath: /etc/alertmanager
+        securityContext:
+          readOnlyRootFilesystem: false
       volumes:
       - name: config-volume
         configMap:
