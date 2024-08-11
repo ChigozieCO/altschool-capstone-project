@@ -22,32 +22,23 @@ spec:
               secretKeyRef:
                 name: slack-hook-url
                 key: SLACK_HOOK_URL
-        args:
-          - '--config.file=/etc/alertmanager/alertmanager.yml'
-          - '--storage.path=/alertmanager'
         command: ["/bin/sh", "-c"]
         args:
-          - /etc/alertmanager/init.sh
+          - |
+            sed -i "s|http://placeholder|$SLACK_HOOK_URL|g" /etc/alertmanager/alertmanager.yml && exec /bin/alertmanager --config.file=/etc/alertmanager/alertmanager.yml --storage.path=/alertmanager
+        securityContext:
+          runAsUser: 65534
+          runAsGroup: 65534
+          fsGroup: 65534
         ports:
         - name: alertmanager
           containerPort: 9093
         volumeMounts:
         - name: config-volume
           mountPath: /etc/alertmanager
-        - name: init-script
-          mountPath: /etc/alertmanager/init.sh
-          subPath: init.sh
-        securityContext:
-          readOnlyRootFilesystem: false
       volumes:
       - name: config-volume
         configMap:
           name: alertmanager
-      - name: init-script
-        configMap:
-          name: alertmanager
-          items:
-            - key: init.sh
-              path: init.sh
       nodeSelector:
         kubernetes.io/os: linux
