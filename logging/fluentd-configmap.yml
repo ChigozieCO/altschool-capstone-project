@@ -16,10 +16,11 @@ data:
       tag kubernetes.*
       read_from_head true
       <parse>
-        @type multiline
-        format_firstline /^{/
-        format /(?<time>[^ ]+) (?<stream>stdout|stderr)( (?<log>.*))?/
-        format_lastline /}$/
+      @type regexp
+        <pattern>
+          format regexp
+          expression /^(?<time>.+) (?<stream>stdout|stderr)( (?<logtag>.*))? (?<log>.*)$/
+        </pattern>
       </parse>
       emit_unmatched_lines true
     </source>
