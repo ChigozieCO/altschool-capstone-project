@@ -57,6 +57,19 @@ data:
       </match>
     </label>
 
+    <label @FLUENT_LOG>
+      <match **>
+        @type copy
+        <store>
+          @type stdout
+        </store>
+        <store>
+          @type relabel
+          @label @DISPATCH
+        </store>
+      </match>
+    </label>
+
     <label @DISPATCH>
       <filter **>
         @type prometheus
