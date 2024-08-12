@@ -24,7 +24,6 @@ data:
     server.name: kibana
     server.host: "0.0.0.0"
     elasticsearch.hosts: [ "http://elasticsearch.kube-logging.svc.cluster.local:9200" ]
-    xpack.security.enabled: false  # Disable security if you are handling it via the subdomain and SSL
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -45,7 +44,7 @@ spec:
     spec:
       containers:
       - name: kibana
-        image: docker.elastic.co/kibana/kibana:7.2.0
+        image: docker.elastic.co/kibana/kibana:7.17.23
         env:
           - name: ELASTICSEARCH_URL
             value: http://elasticsearch.kube-logging.svc.cluster.local:9200
