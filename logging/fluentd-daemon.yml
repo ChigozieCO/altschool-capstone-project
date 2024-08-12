@@ -25,7 +25,7 @@ spec:
           mountPath: /fluentd/etc
       containers:
       - name: fluentd
-        image: fluent/fluentd-kubernetes-daemonset:v1.16.5-debian-elasticsearch-1.0
+        image: fluent/fluentd-kubernetes-daemonset:v1.16.5-debian-elasticsearch7-1.1
         resources:
           limits:
             memory: 200Mi
