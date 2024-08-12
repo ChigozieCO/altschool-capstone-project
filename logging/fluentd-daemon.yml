@@ -25,7 +25,7 @@ spec:
           mountPath: /fluentd/etc
       containers:
       - name: fluentd
-        image: fluent/fluentd-kubernetes-daemonset:v1.4.2-debian-elasticsearch-1.1
+        image: fluent/fluentd-kubernetes-daemonset:v1.16.5-debian-elasticsearch7-1.0
         resources:
           limits:
             memory: 200Mi
@@ -39,8 +39,7 @@ spec:
           mountPath: /var/lib/docker/containers
           readOnly: true
         - name: config-volume
-          mountPath: /fluentd/etc/fluent.conf
-          subPath: fluent.conf
+          mountPath: /fluentd/etc
       terminationGracePeriodSeconds: 30
       volumes:
       - name: varlog
