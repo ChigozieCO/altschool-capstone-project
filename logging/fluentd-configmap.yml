@@ -1,4 +1,3 @@
----
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -6,7 +5,6 @@ metadata:
   namespace: kube-logging
   labels:
     app: fluentd
-    kubernetes.io/cluster-service: "true"
 data:
   fluent.conf: |
     <source>
@@ -18,102 +16,54 @@ data:
       tag kubernetes.*
       read_from_head true
       <parse>
-        @type multi_format
-        <pattern>
-          format json
-          time_key time
-          time_type string
-          time_format "%Y-%m-%dT%H:%M:%S.%NZ"
-          keep_time_key false
-        </pattern>
-        <pattern>
-          format regexp
-          expression /^(?<time>.+) (?<stream>stdout|stderr)( (.))? (?<log>.*)$/
-          time_format '%Y-%m-%dT%H:%M:%S.%NZ'
-          keep_time_key false
-        </pattern>
+        @type json
       </parse>
       emit_unmatched_lines true
     </source>
 
     <label @KUBERNETES>
-      # Filter out specific namespaces
-      <match kubernetes.var.log.containers.fluentd**>
+      # Filter out logs from specific namespaces or containers
+      <match kubernetes.var.log.containers.*>
         @type relabel
-        @label @FLUENT_LOG
+        @label @FILTER
       </match>
-      # Add Kubernetes metadata
-      <filter kubernetes.**>
-        @type kubernetes_metadata
-        @id filter_kube_metadata
-        skip_labels false
-        skip_container_metadata false
-        skip_namespace_metadata false
-        skip_master_url true
+    </label>
+
+    <label @FILTER>
+      # Exclude specific log messages or tags
+      <filter **>
+        @type grep
+        <exclude>
+          key log
+          pattern /unwanted_pattern/
+        </exclude>
       </filter>
+
       <match **>
         @type relabel
         @label @DISPATCH
       </match>
     </label>
 
-    <label @FLUENT_LOG>
-      <match **>
-        @type copy
-        <store>
-          @type stdout
-        </store>
-        <store>
-          @type relabel
-          @label @DISPATCH
-        </store>
-      </match>
-    </label>
-
     <label @DISPATCH>
-      <filter **>
-        @type prometheus
-        <metric>
-          name fluentd_input_status_num_records_total
-          type counter
-          desc The total number of incoming records
-          <labels>
-            tag ${tag}
-            hostname ${hostname}
-          </labels>
-        </metric>
-      </filter>
-
-      <match **>
-        @type relabel
-        @label @OUTPUT
-      </match>
-    </label>
-
-    <label @OUTPUT>
-      # Configure Fluentd to send logs to Elasticsearch
       <match **>
         @type elasticsearch
         @id elasticsearch
         host "elasticsearch.kube-logging.svc.cluster.local"
         port "9200"
         scheme "http"
-        path ""
         logstash_format true
         logstash_prefix fluentd
         type_name _doc
-        <buffer tag, $.kubernetes.container_name>
+        <buffer>
           @type memory
           timekey 5
           timekey_wait 5
+          flush_interval 10s
         </buffer>
         max_retry_wait 30s
         disable_retry_limit
         num_threads 2
-        reload_connections true
-        request_timeout 300s
-        reconnect_on_error true
-        reload_on_failure true
-        log_es_400_reason true
+        request_timeout 30s
       </match>
     </label>
