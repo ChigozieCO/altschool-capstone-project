@@ -19,7 +19,6 @@ data:
         @type regexp
         expression /^(?<time>.+) (?<stream>stdout|stderr)( (?<logtag>.*))? (?<log>.*)$/
         unmatched_lines true
-        </pattern>
       </parse>
       emit_unmatched_lines true
     </source>
