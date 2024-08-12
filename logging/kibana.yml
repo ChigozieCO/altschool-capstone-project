@@ -24,6 +24,7 @@ data:
     server.name: kibana
     server.host: "0.0.0.0"
     elasticsearch.hosts: [ "http://elasticsearch.kube-logging.svc.cluster.local:9200" ]
+    server.publicBaseUrl: "http://kibana.projectchigozie.me"
 ---
 apiVersion: apps/v1
 kind: Deployment
