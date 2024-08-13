@@ -18,6 +18,14 @@ terraform {
       source  = "hashicorp/helm"
     }
   }
+
+  backend "s3" {
+    bucket         = "sockshop-statefiles"
+    key            = "k8s/terraform.tfstate"
+    region         = "us-east-1"
+    dynamodb_table = "sock-shop-lockfile"
+  }
+
 }
 
 # Configure the AWS Provider

@@ -5,6 +5,14 @@ terraform {
       source = "hashicorp/aws"
     }
   }
+
+  backend "s3" {
+    bucket         = "sockshop-statefiles"
+    key            = "eks/terraform.tfstate"
+    region         = "us-east-1"
+    dynamodb_table = "sock-shop-lockfile"
+  }
+
 }
 
 # Configure the AWS Provider
