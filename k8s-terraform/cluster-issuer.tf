@@ -4,13 +4,13 @@ resource "kubectl_manifest" "cert_manager_cluster_issuer" {
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
-  name: letsencrypt-staging
+  name: letsencrypt-prod
 spec:
   acme:
-    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    server: https://acme-v02.api.letsencrypt.org/directory
     email: ${var.email}
     privateKeySecretRef:
-      name: letsencrypt-staging
+      name: letsencrypt-prod
     solvers:
     - dns01:
         route53:

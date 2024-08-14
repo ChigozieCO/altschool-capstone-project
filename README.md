@@ -17,9 +17,9 @@ Here is a brief breakdown how I executed this project, for a more comprehensive 
 
 The first thing to do to begin this project is to create a hosted zone and configure our custom domain.
 
-I have already purchased a custom domain [projectchigozie.me](http://projectchigozie.me/) and so I will create an AWS hosted zone to host this domain. I won't be using terraform to create this hosted zone because this step still requires manually configuration to add the nameservers to the domain.
+I have already purchased a custom domain [projectchigozie.me](http://projectchigozie.me/) and so I created an AWS hosted zone to host this domain. I didn't use terraform to create this hosted zone because this step still required manually configuration to add the nameservers to the domain.
 
-========> bp 1
+<!-- ========> bp 1 -->
 
 Once the hosted zone is created, we then retrieve the namespaces from the created hosted zone and use it to replace those already in our custom domain.
 
@@ -35,7 +35,7 @@ We won't be reinventing the wheel here as there are a lot of terraform modules o
 
 My terraform script for the EKS cluster provisioning can be found in the [terraform directory](./terraform/)
 
-========> bp 2
+<!-- ========> bp 2 -->
 
 I broke down my code into several files for readability and maintainability, it makes the code easier to read and maintain when all scripts that fall into the same group are found in the same place.
 
@@ -49,19 +49,19 @@ As you can see, when I run the `terraform plan` command it lets me know the reso
 
 While writing the configuration to spin up my VPC and other networking resources as well as my EKS I also added configuration to configure IAM roles and policies for Route 53 with cert-manager.
 
-I created an IAM role with a trust policy that specifies the OIDC provider and conditions for when the role can be assumed based on the service account and namespace.
+I created an IAM role with a trust policy that specifies the Open ID Connect (OIDC) provider and conditions for when the role can be assumed based on the service account and namespace.
 
 The ClusterIssuer will need these credentials for the certificate issuing process and as a safe way to handle my secrets I will use IAM roles associated with Kubernetes service accounts to manage access to AWS services securely. This is why it is necessary to create this policy and role for Route53 and I did it using terraform.
 
 You can find the script to create the role [here](./terraform/route53-role-policy.tf)
 
-========> bp 3
+<!-- ========> bp 3 -->
 
 # Create EKS Resources
 
 I provisioned my EKS cluster at this point.
 
-========> bp 4
+<!-- ========> bp 4 -->
 
 The screenshots below show a successful deployment of the EKS cluster.
 
@@ -79,29 +79,31 @@ The screenshots below show a successful deployment of the EKS cluster.
 
 # Set Environment Variables
 
-My setup is in such a way that I will build the EKS cluster first, then using the outputs from that deployment I will set the environment variables for my next terraform build tio create my ingress resources and and SSL certificate.
+My setup is in such a way that I will build the EKS cluster first, then using the outputs from that deployment I will set the environment variables for my next terraform build to create my ingress resources and and SSL certificate.
 
 I will also export my terraform output values as environment variables to use with kubectl and other configurations. This will aid to make the whole process more automated reducing the manual configurations.
 
 I wrote different scripts to do this, find the [scripts here](./scripts), the first script will create the terraform variables that I will use to run my next deployment, find it [here](./scripts/1-setTFvars.sh)
 
-========> bp 5
+There will be more scripts as I go along the project, all my scripts can be found in the [`scripts` directory](./scripts/)
+
+<!-- ========> bp 5 -->
 
 The new script generated from this script is not committed to version control as it contains some sensitive values.
 
 # Configure HTTPS Using Let’s Encrypt
 
-Before I provision my EKS cluster and deploy my application I decided to go ahead and configure HTTPS using Let's Encrypt. I did this using terraform as well, using the Kubernetes provider and the kubectl provider.
+Before I deploy my application I decided to go ahead and configure HTTPS using Let's Encrypt. I did this using terraform as well, using the Kubernetes provider and the kubectl provider. I wrote a new terraform configuration for this, choosing to keep the EKS cluster configuration separate in other to breakdown the process.
 
 You can find the terraform scripts for this deployment in the [K8s-terraform directory here](./k8s-terraform/)
 
-===============> bp 7
+<!-- ===============> bp 7 -->
 
 ### Create Kubernetes Service Account for the Cert Manager to use
 
 Earlier, while writing my EKS cluster configuration, I added a configuration to create an IAM role for service account (IRSA) so now the first thing I did here was to create the namespace for cert-manager and also create a service account and annotate it with the IAM role.
 
-==============> bp 8
+<!-- ==============> bp 8 -->
 
 ### Configure Ingress Controller
 
@@ -109,35 +111,37 @@ Before creating the cert-manager resource I configured my ingress controller, it
 
 You can find the configuration of my ingress controller [here](./k8s-terraform/ingress.tf). I deployed this using helm, using the `helm_release` resource in terraform.
 
-===============> bp 14
+<!-- ===============> bp 14 -->
 
 ### Configure Cert-Manager
 
 After configuring the ingress controller, the next thing to do is to configure the cert-manager, I did this also using helm. Find the configuration [here](./k8s-terraform/cert-manager.tf)
 
-=============> bp 15
+<!-- =============> bp 15 -->
 
-### RBAC
+### RBAC (Role-based access control )
 
-In order to allow cert-manager to issue a token using your ServiceAccount you must deploy some RBAC to the cluster. Find my code [here](./k8s-terraform/role-roleBinding.tf)
+In order to allow cert-manager to issue a token using your ServiceAccount you must deploy some RBAC (Role-based access control ) to the cluster. Find my code [here](./k8s-terraform/role-roleBinding.tf)
 
-=============> bp 16
+<!-- =============> bp 16 -->
 
 ### Configure ClusterIssuer
 
 Next I configured the ClusterIssuer manifest file with the `kubectl_manifest` resource from the kubectl provider so that terraform can adequately use it in the certificate issuing process. I opted to use the DNS01 resolver instead of HTTP01
 
-I had wanted to use the `kubernetes_manifest` resource from the kubernetes provider even though I knew would require two stages of the `terraform apply` command however from research I was able to discover that the kubectl's `kubectl_manifest` resource handles manifest files better and allows for a single stage run of the `terraform apply` command
+I had wanted to use the `kubernetes_manifest` resource from the kubernetes provider even though I knew would require two stages of the `terraform apply` command as the cluster has to be accessible at plan time and thus cannot be created in the same apply operation, another limitation of the `kubernetes_manifest` resource is that it doesn't support having multiple resources in one manifest file, to circumvent this you could either break down your manifest files into their own individual files (but where's the fun in that) or use a `for_each` function to loop through the single file like we will do here.
+
+However from research I was able to discover that the kubectl's `kubectl_manifest` resource handles manifest files better and allows for a single stage run of the `terraform apply` command.
 
 Find the [ClusterIssuer configuration file here](./k8s-terraform/cluster-issuer.tf)
 
-===============> bp 9
+<!-- ===============> bp 9 -->
 
 ### Create Certificate
 
 To create the certificate we will use the `kubectl_manifest` resource to define our manifest file for the certificate creation. You can find my certificate manifest file [here](./k8s-terraform/certificate.tf)
 
-==============> 10
+<!-- ==============> 10 -->
 
 ### Configure Ingress
 
@@ -145,7 +149,7 @@ Now that we have configured Cert Manager, Cluster Issuer and Certificate we need
 
 Find my [ingress configuration here](./k8s-terraform/ingress.tf)
 
-=================> 11
+<!-- =================> 11 -->
 
 ### Connect Domain to LoadBalancer
 
@@ -153,7 +157,7 @@ The Ingress-controller will create a LoadBalancer that give us an external IP to
 
 I used this LoadBalancer to create an A record with my domain name and now I will be able to access the sock shop application from my domain.
 
-=================> 12
+<!-- =================> 12 -->
 
 # Connect Kubectl to EKS Cluster
 
@@ -167,17 +171,15 @@ aws eks update-kubeconfig --region <region-code> --name <cluster name>
 
 However since this is an imperative command I decided to create a script out of it for easier automation and reproduction of the process. Find the script [here](./scripts/3-connect-kubectl.sh)
 
-There will be more scripts as I go along the project, all my scripts can be found in the [`scripts` directory](./scripts/)
-
-==============> bp 6
+<!-- ==============> bp 6 -->
 
 # Deploy Application
 
-Previously I had wanted to deploy my application using terraform but it seems like an overkill seeing as we using a CI/CD pipeline to automate the whole flow eventually resolved to use kubectl to deploy the application to the cluster. 
+Previously I had wanted to deploy my application using terraform but it seems like an overkill seeing as we using a CI/CD pipeline to automate the whole flow, I eventually resolved to use kubectl to deploy the application to the cluster. 
 
 I retrieved the [complete-demo.yaml application file](./app/complete-demo.yaml) from the project repo which is a combination of all the manifests for all the microservices required for our application to be up and running.
 
-=================> bp 13
+<!-- =================> bp 13 -->
 
 # Monitoring and Logging and Alerting
 
@@ -189,7 +191,7 @@ The code for these ingresses can be found in my [ingress file](./k8s-terraform/i
 
 I ensured I copied the SSl secret covering the entire domain to the monitoring namespace and the kube-logging namespace.
 
-==================> bp 17
+<!-- ==================> bp 17 -->
 
 When this was done I applied the manifest files for them.
 
@@ -197,7 +199,7 @@ When this was done I applied the manifest files for them.
 
 I opted to use Jenkins to create my CI/CD pipeline, you can find my Jenkins file [here](..).
 
-Here is proof of successful pipeline deployment through the various stages.
+<!-- Here is proof of successful pipeline deployment through the various stages. -->
 
 My workflow logic is as follows:
 

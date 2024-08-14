@@ -60,7 +60,7 @@ metadata:
   namespace: sock-shop
   annotations:
     kubernetes.io/ingress.class: nginx
-    cert-manager.io/cluster-issuer: "letsencrypt-staging"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
     certmanager.k8s.io/acme-challenge-type: dns01
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
@@ -132,7 +132,7 @@ metadata:
   namespace: monitoring
   annotations:
     kubernetes.io/ingress.class: nginx
-    cert-manager.io/cluster-issuer: "letsencrypt-staging"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
     certmanager.k8s.io/acme-challenge-type: dns01
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
@@ -196,7 +196,7 @@ metadata:
   namespace: kube-logging
   annotations:
     kubernetes.io/ingress.class: nginx
-    cert-manager.io/cluster-issuer: "letsencrypt-staging"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
     certmanager.k8s.io/acme-challenge-type: dns01
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"

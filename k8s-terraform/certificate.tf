@@ -16,7 +16,7 @@ metadata:
 spec:
   secretName: ${var.domain}-tls
   issuerRef:
-    name: letsencrypt-staging
+    name: letsencrypt-prod
     kind: ClusterIssuer
     group: cert-manager.io
   commonName: ${var.domain}
