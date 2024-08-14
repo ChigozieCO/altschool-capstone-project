@@ -192,3 +192,26 @@ I ensured I copied the SSl secret covering the entire domain to the monitoring n
 ==================> bp 17
 
 When this was done I applied the manifest files for them.
+
+# Continuous Integration and Deployment (CI/CD)
+
+I opted to use Jenkins to create my CI/CD pipeline, you can find my Jenkins file [here](..).
+
+Here is proof of successful pipeline deployment through the various stages.
+
+My workflow logic is as follows:
+
+- Pull source code from version commit (my pipeline will be triggered on push).
+- Initialize the Eks terraform configuration.
+- Create the EKS cluster.
+- Initialize the terraform configuration that will create Certificate and Ingress resources.
+- Run script to set K8s Terraform Environment Variables then build Certificate and Ingress resources.
+- Set env vars and connect kubectl to cluster.
+- Deploy Application in EKS Cluster
+- Deploy Alertmanager.
+- Deploy Prometheus and Grafana.
+- Deploy Elasticsearch, Fluentd and Kibana.
+
+I implemented both a creation and destruction flow in my pipeline by parameterizing my workflow. The pipeline includes a parameter called ACTION to select between "create" and "destroy".
+
+Each stage is wrapped in a when block to execute only based on the selected action. When the ACTION parameter is set to `create,` only the stages with the when condition checking for `params.ACTION == 'create'` will be executed. Similarly, if ACTION is set to `destroy,` only the stages with the when condition checking for `params.ACTION == 'destroy'` will run.
