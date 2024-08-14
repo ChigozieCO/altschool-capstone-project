@@ -219,11 +219,27 @@ I ensured I copied the SSl secret covering the entire domain to the monitoring n
 
 When this was done I applied the manifest files for them.
 
+#### Prometheus Dashboard
+
+![Prometheus](https://github.com/user-attachments/assets/7431b741-7ac7-4da2-9fd4-044de8fcd4f1)
+
+#### Grafana Dashboard
+
+![Grafana](https://github.com/user-attachments/assets/019d1ec5-17c5-4677-8ece-0fe98b78d4bc)
+
+#### Slack alert from Alertmanager
+
+![slack-alert](https://github.com/user-attachments/assets/9703d5ea-3e0c-4cda-8ad4-2bb875014495)
+
 # Continuous Integration and Deployment (CI/CD)
 
 I opted to use Jenkins to create my CI/CD pipeline, you can find my Jenkins file [here](..).
 
-<!-- Here is proof of successful pipeline deployment through the various stages. -->
+Here is proof of successful pipeline deployment through the various stages.
+
+#### Successful pipeline build
+
+<img width="605" alt="built-pipeine" src="https://github.com/user-attachments/assets/a5fdda87-14b3-4171-acc7-1fd97a0e5c83">
 
 My workflow logic is as follows:
 
