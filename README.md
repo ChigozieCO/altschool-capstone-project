@@ -157,6 +157,10 @@ To create the certificate we will use the `kubectl_manifest` resource to define 
 
 <!-- ==============> 10 -->
 
+#### Resources in Cert-manager namespace
+
+<img width="673" alt="cert-manager" src="https://github.com/user-attachments/assets/a3f26d0a-5177-4eda-8615-7a386f3a9696">
+
 ### Configure Ingress
 
 Now that we have configured Cert Manager, Cluster Issuer and Certificate we need to setup our Ingress Controller and Ingress resource that will allow us access to our application, we will also be doing this using our terraform configuration.
@@ -164,6 +168,10 @@ Now that we have configured Cert Manager, Cluster Issuer and Certificate we need
 Find my [ingress configuration here](./k8s-terraform/ingress.tf)
 
 <!-- =================> 11 -->
+
+#### Sock-shop ingress
+
+<img width="736" alt="sock-shop-ingress" src="https://github.com/user-attachments/assets/ceed9906-2135-4221-ad24-3c58cdbd8674">
 
 ### Connect Domain to LoadBalancer
 
@@ -176,7 +184,6 @@ I used this LoadBalancer to create two A records, one for my main domain name an
 #### **Ingress LoadBalancer**
 
 <img width="613" alt="ingress-loadbalancer" src="https://github.com/user-attachments/assets/c2fa1f1d-9cbc-4630-ad04-648f3a51eb51">
-
 
 # Connect Kubectl to EKS Cluster
 
