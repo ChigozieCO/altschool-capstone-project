@@ -25,7 +25,7 @@ Once the hosted zone is created, we then retrieve the namespaces from the create
 
 The specific steps to take to do this will vary depending on your domain name registrar but it's pretty much very easy across board.
 
-(image 2)
+<img width="699" alt="hosted-zone" src="https://github.com/user-attachments/assets/4427021c-660a-4bf3-b219-febe886a3174">
 
 # Provision AWS EKS Cluster with Terraform
 
@@ -43,7 +43,7 @@ The scripts will create the VPC we will use for the EKS cluster and every other 
 
 As you can see, when I run the `terraform plan` command it lets me know the resources and the the number of resources it is about to create.
 
-(image 3)
+![tf-plan](https://github.com/user-attachments/assets/6de174e6-6bb4-479c-9e19-22002c999335)
 
 # Create Policy and Role for Route53 to Assume in the ClusterIssuer Process
 
@@ -67,19 +67,25 @@ The screenshots below show a successful deployment of the EKS cluster.
 
 #### **Terraform CLI Showing the Successful Deployment of the Resources**
 
-(image 4)
+<img width="848" alt="4" src="https://github.com/user-attachments/assets/82cd92d1-74c3-4a08-94ec-249b419e5c8d">
 
 #### **AWS Console Showing the EKS Cluster**
 
-(image 5)
+<img width="740" alt="eks-cluster" src="https://github.com/user-attachments/assets/790b5b01-d46a-4994-ba43-92dead9b1ce1">
+
+<img width="784" alt="cluster-nodes" src="https://github.com/user-attachments/assets/f0f864fd-b719-4fd3-b64f-7f073db615c9">
 
 #### **AWS Console Showing the VPC Deployed Along with the EKS Cluster**
 
-(image 6)
+<img width="761" alt="vpc-console" src="https://github.com/user-attachments/assets/7c951ef3-5316-46f1-a81b-c78c98e2b1e5">
+
+![vpc-resourcemap](https://github.com/user-attachments/assets/5ee57e29-7094-4711-8376-e343cfd28975)
 
 # Set Environment Variables
 
-My setup is in such a way that I will build the EKS cluster first, then using the outputs from that deployment I will set the environment variables for my next terraform build to create my ingress resources and and SSL certificate.
+My setup is in such a way that I will build the EKS cluster first, then using the outputs from that deployment I will set the environment variables for my next terraform build to create my ingress resources and SSL certificate.
+
+<img width="593" alt="TFenv" src="https://github.com/user-attachments/assets/0362f976-c83a-4267-a1f2-396cb0a6118e">
 
 I will also export my terraform output values as environment variables to use with kubectl and other configurations. This will aid to make the whole process more automated reducing the manual configurations.
 
@@ -98,6 +104,14 @@ Before I deploy my application I decided to go ahead and configure HTTPS using L
 You can find the terraform scripts for this deployment in the [K8s-terraform directory here](./k8s-terraform/)
 
 <!-- ===============> bp 7 -->
+
+From the images below you can see that my frontend is secure and the certificate is issued my let's encrypt.
+
+![application-frontend](https://github.com/user-attachments/assets/9da76af1-1861-4b7a-a1c6-89e1102aaf18)
+
+
+![secure-cert](https://github.com/user-attachments/assets/35d4385a-a9c9-4dac-abac-596ffcca5b29)
+
 
 ### Create Kubernetes Service Account for the Cert Manager to use
 
@@ -121,7 +135,7 @@ After configuring the ingress controller, the next thing to do is to configure t
 
 ### RBAC (Role-based access control )
 
-In order to allow cert-manager to issue a token using your ServiceAccount you must deploy some RBAC (Role-based access control ) to the cluster. Find my code [here](./k8s-terraform/role-roleBinding.tf)
+In order to allow cert-manager issue a token using your ServiceAccount you must deploy some RBAC (Role-based access control ) to the cluster. Find my code [here](./k8s-terraform/role-roleBinding.tf)
 
 <!-- =============> bp 16 -->
 
@@ -153,11 +167,16 @@ Find my [ingress configuration here](./k8s-terraform/ingress.tf)
 
 ### Connect Domain to LoadBalancer
 
-The Ingress-controller will create a LoadBalancer that give us an external IP to us in access our resources and we will point our domain to.
+The Ingress-controller will create a LoadBalancer that give us an external IP to use in accessing our resources and we will point our domain to.
 
-I used this LoadBalancer to create an A record with my domain name and now I will be able to access the sock shop application from my domain.
+I used this LoadBalancer to create two A records, one for my main domain name and the other for a wildcard (*) for my subdomains and now I will be able to access the sock shop application from my domain.
 
 <!-- =================> 12 -->
+
+#### **Ingress LoadBalancer**
+
+<img width="613" alt="ingress-loadbalancer" src="https://github.com/user-attachments/assets/c2fa1f1d-9cbc-4630-ad04-648f3a51eb51">
+
 
 # Connect Kubectl to EKS Cluster
 
@@ -172,6 +191,11 @@ aws eks update-kubeconfig --region <region-code> --name <cluster name>
 However since this is an imperative command I decided to create a script out of it for easier automation and reproduction of the process. Find the script [here](./scripts/3-connect-kubectl.sh)
 
 <!-- ==============> bp 6 -->
+
+When the script is successful run, my kubectl is connected to my cluster.
+
+<img width="641" alt="kubectl-connected" src="https://github.com/user-attachments/assets/69a4323d-425b-4959-b3da-e0dd572aa11c">
+
 
 # Deploy Application
 
