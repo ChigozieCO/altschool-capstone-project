@@ -144,7 +144,7 @@ pipeline {
                 expression { params.ACTION == 'destroy' }
             }
             steps {
-                dir('k8-terraform'){
+                dir('k8s-terraform'){
                     sh """
                     kubectl delete crd certificaterequests.cert-manager.io \
                     certificates.cert-manager.io \
