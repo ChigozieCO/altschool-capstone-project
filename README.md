@@ -246,6 +246,10 @@ When this was done I applied the manifest files for them.
 
 ![slack-alert](https://github.com/user-attachments/assets/9703d5ea-3e0c-4cda-8ad4-2bb875014495)
 
+#### Elasticsearch, Fluentd and Kibana Resources
+
+<img width="606" alt="EFK" src="https://github.com/user-attachments/assets/cf7dfdd9-99e6-45e6-b475-d319d79ebad9">
+
 # Continuous Integration and Deployment (CI/CD)
 
 I opted to use Jenkins to create my CI/CD pipeline, you can find my Jenkins file [here](..).
@@ -256,7 +260,7 @@ Here is proof of successful pipeline deployment through the various stages.
 
 <img width="605" alt="built-pipeine" src="https://github.com/user-attachments/assets/a5fdda87-14b3-4171-acc7-1fd97a0e5c83">
 
-My workflow logic is as follows:
+### My workflow logic is as follows:
 
 - Pull source code from version commit (my pipeline will be triggered on push).
 - Initialize the Eks terraform configuration.
