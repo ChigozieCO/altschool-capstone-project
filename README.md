@@ -1,3 +1,8 @@
+# Architecture Diagram
+
+![Sock-shop-architecture drawio](https://github.com/user-attachments/assets/a954f056-d217-4bf2-ae95-d4e872b51df7)
+
+
 This project is about deploying a microservices-based application using automated tools to ensure quick, reliable, and secure deployment on Kubernetes. By focusing on Infrastructure as Code, you'll create a reproducible and maintainable deployment process that leverages modern DevOps practices and tools.
 
 For a detailed breakdown of what this project is trying to achieve check out [the requirements here](./Requirements.md)
