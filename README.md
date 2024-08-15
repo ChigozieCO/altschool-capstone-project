@@ -212,6 +212,14 @@ I retrieved the [complete-demo.yaml application file](./app/complete-demo.yaml) 
 
 <!-- =================> bp 13 -->
 
+#### Sock-shop pods
+
+<img width="624" alt="sock-shop-pod" src="https://github.com/user-attachments/assets/432bba68-d5fe-4a58-a297-95fe31a30e3a">
+
+#### Sock-shop-services
+
+<img width="517" alt="sock-shop-svc" src="https://github.com/user-attachments/assets/729875ca-5635-45bc-aa1f-cfa654aa731e">
+
 # Monitoring and Logging and Alerting
 
 To setup prometheus, grafana, alertmanager and Kibana for monitoring, logging and alerting I retrieved the respective manifest files from the project repo and then created two additional ingresses that will exist in the monitoring namespace and the kube-system namespace so that I can access these dashboards from my subdomain.
