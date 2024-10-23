@@ -15,11 +15,11 @@ module "vpc" {
   single_nat_gateway      = true
   enable_dns_hostnames    = true
 
- public_subnet_tags = {
+  public_subnet_tags = {
   "kubernetes.io/role/internal-elb"             = 1 # If you want to deploy load balancers to a subnet, the subnet must have 
- }
+  }
 
- private_subnet_tags = {
+  private_subnet_tags = {
   "kubernetes.io/role/internal-elb"             = 1 # If you want to deploy load balancers to a subnet, the subnet must have 
- }
+  }
 }

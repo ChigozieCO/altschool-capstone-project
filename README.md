@@ -191,6 +191,8 @@ To create the certificate we will use the `kubectl_manifest` resource to define 
 
 Now that we have configured Cert Manager, Cluster Issuer and Certificate we need to setup our Ingress Controller and Ingress resource that will allow us access to our application, we will also be doing this using our terraform configuration.
 
+I decided to use the `nginx-ingress` helm chart with the aid of the `helm-release` resource from the helm provider.
+
 Find my [ingress configuration here](./k8s-terraform/ingress.tf)
 
 <!-- =================> 11 -->
@@ -203,7 +205,7 @@ Find my [ingress configuration here](./k8s-terraform/ingress.tf)
 ### Connect Domain to LoadBalancer
 ----------------------------------------------------------------------------------------------------------------
 
-The Ingress-controller will create a LoadBalancer that give us an external IP to use in accessing our resources and we will point our domain to.
+The Ingress-controller will create a LoadBalancer that give us an external IP to use in accessing our resources and we will point our domain to it by creating an `A` record.
 
 I used this LoadBalancer to create two A records, one for my main domain name and the other for a wildcard (*) for my subdomains and now I will be able to access the sock shop application from my domain.
 
